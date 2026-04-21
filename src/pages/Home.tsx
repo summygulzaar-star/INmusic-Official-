@@ -24,6 +24,7 @@ import { cn } from "../lib/utils";
 import { LoadingSpinner } from "../components/ui/Loading";
 import { useAuth } from "../context/AuthContext";
 import IndianFeatures from "../components/IndianFeatures";
+import PricingSection from "../components/PricingSection";
 
 const PLATFORMS = [
   { name: "Spotify", gradient: "from-[#1DB954] to-[#1ed760]" },
@@ -82,8 +83,9 @@ export default function Home() {
         <div className="hidden md:flex items-center gap-8 text-[10px] font-black uppercase tracking-widest text-white/60">
           <a href="#features" className="hover:text-electric-blue transition-colors">Features</a>
           <a href="#pricing" className="hover:text-electric-blue transition-colors">Pricing</a>
-          <a href="#contact" className="hover:text-electric-blue transition-colors">Contact</a>
-          <Link to="/dashboard/requests" className="hover:text-electric-blue transition-colors uppercase">Support</Link>
+          <Link to="/terms" className="hover:text-electric-blue transition-colors">Legal</Link>
+          <Link to="/contact" className="hover:text-electric-blue transition-colors">Contact</Link>
+          <Link to="/features" className="hover:text-electric-blue transition-colors uppercase">Support</Link>
         </div>
 
         <div className="flex items-center gap-4">
@@ -310,93 +312,8 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Pricing */}
-      <section id="pricing" className="py-40 px-6 relative overflow-hidden">
-        {/* Decorative Background Elements */}
-        <div className="absolute top-0 left-0 w-full h-full opacity-30 pointer-events-none">
-          <div className="absolute top-[10%] left-[5%] w-[40rem] h-[40rem] bg-electric-blue/10 blur-[150px] rounded-full"></div>
-          <div className="absolute bottom-[10%] right-[5%] w-[35rem] h-[35rem] bg-neon-purple/10 blur-[130px] rounded-full"></div>
-        </div>
-
-        <div className="max-w-7xl mx-auto relative z-10">
-          <div className="text-center mb-24">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-6"
-            >
-              <ShieldCheck className="w-4 h-4 text-electric-blue" />
-              <span className="text-xs font-black uppercase tracking-widest text-white/70">Fair & Transparent</span>
-            </motion.div>
-            <h2 className="font-display text-6xl md:text-8xl font-black tracking-tighter leading-[0.9] mb-8 uppercase">
-              SIMPLE <span className="text-electric-blue">PRICING</span> <br />
-              GLOBAL <span className="text-neon-purple">REACH</span>
-            </h2>
-            <p className="text-white/40 max-w-xl mx-auto text-lg font-light leading-relaxed">Choose the plan that fits your career stage. No hidden fees, just pure growth.</p>
-          </div>
- 
-          <div className="grid lg:grid-cols-3 gap-8 items-start">
-            {[
-              { name: "Artist", price: "299", features: ["Single Artist Dashboard", "Unlimited Uploads", "85% Royalties", "15 Days Standard Support"], popular: false, color: "from-blue-500/20" },
-              { name: "Pro Label", price: "999", features: ["Up to 10 Artists", "Priority Approval", "90% Royalties", "Vevo Channel & OAC", "YouTube Content ID", "Dedicated Support"], popular: true, color: "from-electric-blue" },
-              { name: "Enterprise", price: "2,499", features: ["Unlimited Artists", "95% Royalties", "White Label Options", "Custom UPC/ISRC", "Dedicated Manager", "Direct Editorial Pitching"], popular: false, color: "from-purple-500/20" }
-            ].map((p, i) => (
-              <motion.div 
-                key={i}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                whileHover={{ y: -10 }}
-                className={cn(
-                  "relative p-12 rounded-[4rem] border transition-all duration-700 flex flex-col items-center text-center",
-                  p.popular 
-                    ? "bg-electric-blue border-white/20 shadow-[0_0_100px_rgba(0,212,255,0.2)] scale-105 z-20" 
-                    : "glass-dark border-white/10 hover:bg-white/5"
-                )}
-              >
-                {p.popular && (
-                  <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-white text-brand-blue px-8 py-2 rounded-full text-xs font-black uppercase tracking-[0.2em] shadow-xl">
-                    Most Popular
-                  </div>
-                )}
-                
-                <h3 className={cn("text-3xl font-black font-display mb-2 uppercase tracking-tight", p.popular ? "text-[#0D1B2A]" : "text-white")}>{p.name}</h3>
-                <div className="flex items-baseline mb-10">
-                  <span className={cn("text-5xl font-black", p.popular ? "text-[#0D1B2A]" : "text-white")}>₹{p.price}</span>
-                  <span className={cn("text-sm ml-2", p.popular ? "text-[#0D1B2A]/60" : "text-white/40")}>/ YEAR</span>
-                </div>
-
-                <div className={cn("w-full h-px mb-10", p.popular ? "bg-[#0D1B2A]/10" : "bg-white/10")}></div>
-
-                <ul className={cn("space-y-6 mb-12 text-sm font-light text-left w-full", p.popular ? "text-[#0D1B2A]/80" : "text-white/60")}>
-                  {p.features.map(f => (
-                    <li key={f} className="flex items-center gap-3">
-                      <div className={cn("w-5 h-5 rounded-full flex items-center justify-center shrink-0 shadow-sm", p.popular ? "bg-[#0D1B2A]/10" : "bg-electric-blue/10")}>
-                        <ShieldCheck className={cn("w-3 h-3", p.popular ? "text-[#0D1B2A]" : "text-electric-blue")} />
-                      </div>
-                      <span className="tracking-wide">{f}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <Link 
-                  to="/auth?mode=signup" 
-                  className={cn(
-                    "w-full py-6 rounded-3xl font-black uppercase tracking-widest text-sm transition-all duration-300",
-                    p.popular 
-                      ? "bg-[#0D1B2A] text-white hover:scale-[1.02] active:scale-95 shadow-2xl" 
-                      : "bg-white/10 text-white hover:bg-white/20 border border-white/10"
-                  )}
-                >
-                  Start with {p.name}
-                </Link>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* Pricing Section */}
+      <PricingSection />
 
       {/* Contact Section */}
       <section id="contact" className="py-32 px-6 relative overflow-hidden">
@@ -540,44 +457,102 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="py-20 px-6 border-t border-white/5 bg-[#081320]">
-        <div className="max-w-7xl mx-auto grid md:grid-cols-4 gap-12">
-          <div className="col-span-2 space-y-8">
-            <div className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-brand-blue rounded-xl flex items-center justify-center rotate-12 shadow-lg">
-                <Music className="text-white w-6 h-6 -rotate-12" />
+      <footer className="relative py-32 px-6 bg-[#030712] border-t border-white/5 overflow-hidden">
+        {/* Abstract Background Glow */}
+        <div className="absolute top-0 left-1/4 w-[40rem] h-[40rem] bg-indigo-500/5 blur-[150px] rounded-full pointer-events-none"></div>
+        
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 md:gap-24 pb-24">
+            <div className="col-span-1 lg:col-span-2 space-y-10">
+              <Link to="/" className="flex items-center gap-3 group">
+                <div className="w-12 h-12 bg-indigo-600 rounded-2xl flex items-center justify-center rotate-3 group-hover:rotate-12 transition-all duration-500 shadow-[0_0_30px_rgba(79,70,229,0.3)]">
+                  <Music className="text-white w-6 h-6 -rotate-3 group-hover:-rotate-12 transition-all duration-500" />
+                </div>
+                <span className="font-display text-3xl font-black tracking-tighter text-white uppercase italic">IND Distribution</span>
+              </Link>
+              <p className="text-slate-500 max-w-sm text-lg font-medium leading-relaxed">
+                The ultimate ecosystem for independent music creators and labels. Empowering 50k+ independent artists across Asia with global reach.
+              </p>
+              <div className="flex gap-4">
+                {[
+                  { icon: Instagram, color: "hover:bg-pink-500", label: "Instagram" },
+                  { icon: Youtube, color: "hover:bg-red-600", label: "YouTube" },
+                  { icon: MessageCircle, color: "hover:bg-[#25D366]", label: "WhatsApp" },
+                  { icon: Apple, color: "hover:bg-slate-700", label: "Apple" }
+                ].map((social, idx) => (
+                  <motion.div 
+                    key={idx}
+                    whileHover={{ y: -5, scale: 1.1 }}
+                    className={cn(
+                      "w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-white transition-all cursor-pointer",
+                      social.color
+                    )}
+                  >
+                    <social.icon className="w-5 h-5" />
+                  </motion.div>
+                ))}
               </div>
-              <span className="font-display text-2xl font-bold tracking-tighter text-white">IND Distribution</span>
             </div>
-            <p className="text-white/40 max-w-sm font-light leading-relaxed">The ultimate ecosystem for independent music creators and labels. Empowering 50k+ independent artists across Asia.</p>
-            <div className="flex gap-4">
-               <div className="w-10 h-10 rounded-full glass-dark flex items-center justify-center hover:bg-electric-blue hover:text-[#0D1B2A] transition-all cursor-pointer border-white/10"><Instagram className="w-5 h-5" /></div>
-               <div className="w-10 h-10 rounded-full glass-dark flex items-center justify-center hover:bg-electric-blue hover:text-[#0D1B2A] transition-all cursor-pointer border-white/10"><Youtube className="w-5 h-5" /></div>
-               <div className="w-10 h-10 rounded-full glass-dark flex items-center justify-center hover:bg-[#25D366] hover:text-white transition-all cursor-pointer border-white/10"><MessageCircle className="w-5 h-5" /></div>
-               <div className="w-10 h-10 rounded-full glass-dark flex items-center justify-center hover:bg-electric-blue hover:text-[#0D1B2A] transition-all cursor-pointer border-white/10"><Apple className="w-5 h-5" /></div>
+
+            <div className="space-y-10">
+              <h4 className="font-display font-black uppercase tracking-[0.3em] text-[10px] text-indigo-500 italic">Ecosystem</h4>
+              <ul className="space-y-5">
+                {[
+                  { label: "India Features", to: "/features" },
+                  { label: "Pricing Tiers", to: "#pricing" },
+                  { label: "Global Presence", to: "#distribution" },
+                  { label: "Marketing Matrix", to: "#" }
+                ].map((link, idx) => (
+                  <li key={idx}>
+                    <Link to={link.to} className="text-sm font-bold text-slate-400 hover:text-white hover:translate-x-1 transition-all inline-block uppercase tracking-widest">
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="space-y-10">
+              <h4 className="font-display font-black uppercase tracking-[0.3em] text-[10px] text-pink-500 italic">Corporate</h4>
+              <ul className="space-y-5">
+                {[
+                  { label: "Artist Terminal", to: "/auth?mode=login" },
+                  { label: "Label Access", to: "/auth?mode=signup" },
+                  { label: "Direct Support", to: "/contact" },
+                  { label: "Terms & Legal", to: "/terms" },
+                  { label: "Refund Policy", to: "/refunds" }
+                ].map((link, idx) => (
+                  <li key={idx}>
+                    <Link to={link.to} className="text-sm font-bold text-slate-400 hover:text-white hover:translate-x-1 transition-all inline-block uppercase tracking-widest">
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
-          <div>
-            <h4 className="font-display font-black uppercase tracking-widest text-[10px] text-white/40 mb-8 italic">Product</h4>
-            <ul className="space-y-4 text-xs font-bold text-white/60 uppercase tracking-widest">
-               <li><Link to="/features" className="hover:text-electric-blue transition-colors">Features</Link></li>
-               <li><a href="#distribution" className="hover:text-electric-blue transition-colors">Distribution</a></li>
-               <li><a href="#" className="hover:text-electric-blue transition-colors">Marketing</a></li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-display font-black uppercase tracking-widest text-[10px] text-white/40 mb-8 italic">Company</h4>
-            <ul className="space-y-4 text-xs font-bold text-white/60 uppercase tracking-widest">
-               <li><Link to="/auth?mode=login" className="hover:text-electric-blue transition-colors">Artist Login</Link></li>
-               <li><a href="mailto:musicdistributionindia.in@gmail.com" className="hover:text-electric-blue transition-colors">Contact Us</a></li>
-               <li><a href="#" className="hover:text-electric-blue transition-colors">Privacy Legal</a></li>
-            </ul>
-          </div>
-        </div>
-        <div className="max-w-7xl mx-auto mt-20 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] tracking-[0.3em] uppercase font-black text-white/20">
-          <p>© 2026 IND Distribution BY SK JI. ALL RIGHTS RESERVED.</p>
-          <div className="flex gap-8">
-            <span className="flex items-center gap-2"><Globe className="w-3 h-3" /> Asia / India / Global</span>
+
+          {/* Bottom Bar - Redesigned as Professional Status Bar */}
+          <div className="relative pt-12">
+            {/* Glowing Divider */}
+            <div className="absolute top-0 left-0 w-full h-[1px] bg-linear-to-r from-transparent via-indigo-500/20 to-transparent"></div>
+            
+            <div className="flex flex-col md:flex-row justify-between items-center gap-8 text-[10px] font-black tracking-[0.4em] uppercase">
+              <div className="flex items-center gap-4 text-slate-500">
+                <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+                <p>© 2026 IND Distribution BY <span className="text-white">SK JI</span>. ALL HUMAN RIGHTS RESERVED.</p>
+              </div>
+              <div className="flex items-center gap-12 text-slate-500">
+                <div className="flex items-center gap-3">
+                  <Globe className="w-3.5 h-3.5 text-indigo-500" />
+                  <span>Connectivity: Asia / India / Global</span>
+                </div>
+                <div className="hidden lg:flex items-center gap-3">
+                  <ShieldCheck className="w-3.5 h-3.5 text-pink-500" />
+                  <span>Security: Enterprise Grade</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </footer>

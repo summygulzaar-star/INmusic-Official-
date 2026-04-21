@@ -27,6 +27,11 @@ const ContentID = lazy(() => import('./pages/dashboard/ContentID'));
 const Reports = lazy(() => import('./pages/dashboard/Reports'));
 const GrowthTools = lazy(() => import('./pages/dashboard/GrowthTools'));
 
+// Legal Pages
+const Terms = lazy(() => import('./pages/legal/Terms'));
+const Refunds = lazy(() => import('./pages/legal/Refunds'));
+const Contact = lazy(() => import('./pages/legal/Contact'));
+
 // Admin Pages
 const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'));
 const AdminHome = lazy(() => import('./pages/admin/AdminHome'));
@@ -69,6 +74,9 @@ function AppContent() {
           {/* Public Routes */}
           <Route path="/" element={<Home />} />
           <Route path="/features" element={<Features />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/refunds" element={<Refunds />} />
+          <Route path="/contact" element={<Contact />} />
           
           {/* Auth Routes */}
           <Route path="/auth" element={!user ? <Auth /> : <Navigate to="/dashboard" />} />

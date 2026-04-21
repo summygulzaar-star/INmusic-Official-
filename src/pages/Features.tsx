@@ -46,9 +46,8 @@ export default function Features() {
         <div className="hidden md:flex items-center gap-8 text-xs font-bold uppercase tracking-widest text-white/60">
           <Link to="/" className="hover:text-electric-blue transition-colors">Home</Link>
           <a href="#distribution" className="hover:text-electric-blue transition-colors">Distribution</a>
-          <a href="#royalties" className="hover:text-electric-blue transition-colors">Royalties</a>
-          <a href="#youtube" className="hover:text-electric-blue transition-colors">YouTube ID</a>
-          <Link to="/auth?mode=signup" className="hover:text-electric-blue transition-colors">Join</Link>
+          <Link to="/terms" className="hover:text-electric-blue transition-colors">Legal</Link>
+          <Link to="/contact" className="hover:text-electric-blue transition-colors">Contact</Link>
         </div>
 
         <div className="flex items-center gap-4">
@@ -455,9 +454,10 @@ export default function Features() {
           <div>
             <h4 className="font-display font-black uppercase tracking-widest text-[10px] text-white/40 mb-8 italic">Company</h4>
             <ul className="space-y-4 text-xs font-bold text-white/60 uppercase tracking-widest">
-               <li><Link to="/auth?mode=login" className="hover:text-electric-blue">Artist Login</Link></li>
-               <li><a href="mailto:musicdistributionindia.in@gmail.com" className="hover:text-electric-blue">Contact Us</a></li>
-               <li><a href="#" className="hover:text-electric-blue">Privacy Legal</a></li>
+               <li><Link to="/auth?mode=login" className="hover:text-electric-blue transition-colors">Artist Login</Link></li>
+               <li><Link to="/contact" className="hover:text-electric-blue transition-colors">Contact Us</Link></li>
+               <li><Link to="/terms" className="hover:text-electric-blue transition-colors">Terms & Legal</Link></li>
+               <li><Link to="/refunds" className="hover:text-electric-blue transition-colors">Refund Policy</Link></li>
             </ul>
           </div>
         </div>
