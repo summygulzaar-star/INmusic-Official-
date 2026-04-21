@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useSearchParams, useNavigate, Link } from "react-router-dom";
+import SEO from "../components/SEO";
 import { signInWithPopup, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { auth, googleProvider, db } from "../lib/firebase";
 import { doc, setDoc, getDoc } from "firebase/firestore";
@@ -105,6 +106,10 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-brand-light p-6 overflow-hidden relative">
+      <SEO 
+        title={mode === 'login' ? "Login to Artist Portal" : "Create Artist Account"}
+        description="Join thousands of global artists with IND Distribution. Manage your royalties, distribution, and analytics with ease."
+      />
       {/* Decorative Blobs */}
       <div className="absolute top-0 -left-20 w-[40rem] h-[40rem] bg-brand-blue/10 blur-[100px] rounded-full"></div>
       <div className="absolute bottom-0 -right-20 w-[40rem] h-[40rem] bg-brand-purple/10 blur-[100px] rounded-full"></div>
@@ -118,9 +123,9 @@ export default function Auth() {
           <Link to="/" className="w-16 h-16 bg-brand-blue rounded-2xl flex items-center justify-center rotate-12 shadow-xl mb-6">
             <Music className="text-white w-8 h-8 -rotate-12" />
           </Link>
-          <h2 className="font-display text-4xl font-bold tracking-tighter text-center">
+          <h1 className="font-display text-4xl font-bold tracking-tighter text-center">
             {mode === "login" ? "WELCOME BACK" : "CREATE ACCOUNT"}
-          </h2>
+          </h1>
           <p className="text-brand-dark/50 text-sm mt-2">The future of distribution awaits you.</p>
         </div>
 

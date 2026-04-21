@@ -25,6 +25,7 @@ const Requests = lazy(() => import('./pages/dashboard/Requests'));
 const OACRequest = lazy(() => import('./pages/dashboard/OACRequest'));
 const ContentID = lazy(() => import('./pages/dashboard/ContentID'));
 const Reports = lazy(() => import('./pages/dashboard/Reports'));
+const GrowthTools = lazy(() => import('./pages/dashboard/GrowthTools'));
 
 // Admin Pages
 const AdminLayout = lazy(() => import('./pages/admin/AdminLayout'));
@@ -108,6 +109,7 @@ function AppContent() {
             <Route path="oac" element={<OACRequest />} />
             <Route path="content-id" element={<ContentID />} />
             <Route path="reports" element={<Reports />} />
+            <Route path="growth" element={<GrowthTools />} />
           </Route>
 
           <Route path="*" element={<Navigate to="/" />} />

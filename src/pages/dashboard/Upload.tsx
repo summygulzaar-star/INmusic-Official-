@@ -31,9 +31,11 @@ import {
   ArrowUpRight,
   ShieldCheck,
   ShieldAlert,
-  UserPlus
+  UserPlus,
+  Zap
 } from "lucide-react";
 import { cn } from "../../lib/utils";
+import { INDIAN_GENRES } from "../../lib/constants";
 
 const schema = z.object({
   releaseType: z.enum(["Single", "Album", "EP"]),
@@ -70,13 +72,17 @@ const STEPS = [
 ];
 
 const LANGUAGES = [
-  "Hindi", "English", "Punjabi", "Haryanvi", "Rajasthani", "Rajasthani Bagdi", "Rajasthani Marwadi", 
-  "Bengali", "Marathi", "Telugu", "Tamil", "Gujarati", "Urdu", "Kannada", "Odia", "Malayalam", 
-  "Assamese", "Maithili", "Sanskrit"
+  "Hindi", "English", "Punjabi", "Haryanvi", "Bhojpuri", "Rajasthani", "Bengali", "Marathi", 
+  "Telugu", "Tamil", "Gujarati", "Urdu", "Kannada", "Malayalam", "Odia", "Assamese", "Maithili"
 ];
 
 const YEARS = Array.from({ length: 2070 - 2017 + 1 }, (_, i) => (2017 + i).toString());
-const GENRES = ["Pop", "HipHop", "Classical", "Folk", "EDM", "Jazz", "Rock", "Devotional", "Bollywood", "Lo-Fi", "Indie"];
+const GENRES = [
+  "Bollywood", "Indi-Pop", "Hip-Hop / Rap", "EDM", "Rock", "Classical", "Folk", "Devotional",
+  "Ghazal", "Sufi", "Jazz", "Instrumental", "Punjabi Pop", "Haryanvi Beat", "Bhojpuri Folk",
+  "Rajasthani Folk", "Marathi Lavani", "Bengali Rabindra Sangeet", "Tamil Kollywood",
+  "Telugu Tollywood", "Kannada Sandalwood", "Malayalam Mollywood"
+];
 const PLATFORMS = [
   { name: "Spotify", gradient: "from-[#1DB954] to-[#191414]", color: "#1DB954" },
   { name: "Apple Music", gradient: "from-[#FA243C] to-[#fc3c44]", color: "#FA243C" },
@@ -524,16 +530,29 @@ export default function Upload() {
                          </div>
                       </div>
 
-                      <div className="space-y-2 md:space-y-3">
-                         <label className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest md:tracking-[0.2em] text-slate-400 ml-2 md:ml-4">Primary Genre</label>
-                         <select {...register("primaryGenre")} className="w-full p-4 md:p-5 bg-slate-50 border-none rounded-2xl md:rounded-3xl text-sm font-bold appearance-none shadow-sm">
-                            {GENRES.map(g => <option key={g} value={g}>{g}</option>)}
+                      <div className="space-y-4">
+                         <div className="flex items-center justify-between px-4">
+                            <label className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest md:tracking-[0.2em] text-slate-400">Primary Genre</label>
+                            <button type="button" className="text-[9px] font-black uppercase text-brand-purple flex items-center gap-1.5 hover:scale-105 transition-transform"><Zap className="w-3 h-3 fill-brand-purple" /> Auto Suggest (AI)</button>
+                         </div>
+                         <select {...register("primaryGenre")} className="w-full p-4 md:p-5 bg-slate-50 border-none rounded-2xl md:rounded-3xl text-sm font-bold appearance-none shadow-sm cursor-pointer hover:bg-slate-100 transition-colors">
+                            <optgroup label="Primary Genres">
+                               {INDIAN_GENRES.primary.map(g => <option key={g} value={g}>{g}</option>)}
+                            </optgroup>
+                            <optgroup label="Regional Genres">
+                               {INDIAN_GENRES.regional.map(g => <option key={g} value={g}>{g}</option>)}
+                            </optgroup>
                          </select>
                       </div>
-                      <div className="space-y-2 md:space-y-3">
-                         <label className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest md:tracking-[0.2em] text-slate-400 ml-2 md:ml-4">Secondary Genre</label>
-                         <select {...register("secondaryGenre")} className="w-full p-4 md:p-5 bg-slate-50 border-none rounded-2xl md:rounded-3xl text-sm font-bold appearance-none shadow-sm">
-                            {GENRES.map(g => <option key={g} value={g}>{g}</option>)}
+                      <div className="space-y-4">
+                         <label className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest md:tracking-[0.2em] text-slate-400 ml-4">Secondary Genre</label>
+                         <select {...register("secondaryGenre")} className="w-full p-4 md:p-5 bg-slate-50 border-none rounded-2xl md:rounded-3xl text-sm font-bold appearance-none shadow-sm cursor-pointer hover:bg-slate-100 transition-colors">
+                            <optgroup label="Primary Genres">
+                               {INDIAN_GENRES.primary.map(g => <option key={g} value={g}>{g}</option>)}
+                            </optgroup>
+                            <optgroup label="Regional Genres">
+                               {INDIAN_GENRES.regional.map(g => <option key={g} value={g}>{g}</option>)}
+                            </optgroup>
                          </select>
                       </div>
                       <div className="space-y-2 md:space-y-3">

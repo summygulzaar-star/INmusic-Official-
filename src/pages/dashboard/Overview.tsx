@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { collection, query, where, getDocs, limit, orderBy } from "firebase/firestore";
 import { db } from "../../lib/firebase";
 import { useAuth } from "../../context/AuthContext";
+import SEO from "../../components/SEO";
 import { 
   TrendingUp, 
   Music, 
@@ -98,6 +99,7 @@ export default function Overview() {
 
   return (
     <div className="space-y-12 pb-20">
+      <SEO title="Artist Mission Control" />
       {isAdmin && (
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}

@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "motion/react";
 import { Link } from "react-router-dom";
+import SEO from "../components/SEO";
 import { 
   Music, 
   Zap, 
@@ -22,6 +23,7 @@ import {
 import { cn } from "../lib/utils";
 import { LoadingSpinner } from "../components/ui/Loading";
 import { useAuth } from "../context/AuthContext";
+import IndianFeatures from "../components/IndianFeatures";
 
 const PLATFORMS = [
   { name: "Spotify", gradient: "from-[#1DB954] to-[#1ed760]" },
@@ -54,6 +56,10 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#0D1B2A] text-white font-sans overflow-x-hidden selection:bg-electric-blue/30">
+      <SEO 
+        title="IND Distribution | Elite Global Music Distribution"
+        description="Join 50k+ global artists. Distribute your music to 250+ stores like Spotify, Apple Music, and Instagram with IND Distribution. Get 24hr releases and 100% transparent royalty management."
+      />
       {/* Floating WhatsApp Button */}
       <a 
         href="https://wa.me/917742789827" 
@@ -160,6 +166,9 @@ export default function Home() {
           </motion.div>
         </div>
       </section>
+
+      {/* Indian Power Features Section */}
+      <IndianFeatures />
 
       {/* Features - Bento Grid */}
       <section id="features" className="py-32 px-6 relative overflow-hidden">

@@ -36,6 +36,7 @@ const NAV_ITEMS = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
   { label: "Upload Music", icon: Upload, path: "/dashboard/upload" },
   { label: "My Releases", icon: Music, path: "/dashboard/releases" },
+  { label: "Growth Tools", icon: Zap, path: "/dashboard/growth" },
   { label: "Wallet", icon: Wallet, path: "/dashboard/wallet" },
   { label: "Artists", icon: User, path: "/dashboard/artists" },
   { label: "Labels", icon: Globe, path: "/dashboard/labels" },
