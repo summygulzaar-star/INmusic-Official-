@@ -121,20 +121,20 @@ export default function WalletPage() {
       <div className="grid lg:grid-cols-3 gap-8 items-start">
          <div className="lg:col-span-2 space-y-8">
             <div>
-               <h1 className="text-5xl font-black font-display tracking-tight uppercase">TREASURY <span className="text-brand-blue">VAULT</span></h1>
-               <p className="text-slate-400 font-medium text-left">Manage your global royalties and financial distribution.</p>
+               <h1 className="text-3xl md:text-5xl font-black font-display tracking-tight uppercase">TREASURY <span className="text-brand-blue">VAULT</span></h1>
+               <p className="text-slate-400 font-medium text-center md:text-left">Manage your global royalties and financial distribution.</p>
             </div>
 
-            <div className="bg-slate-950 rounded-[4rem] p-12 text-white relative overflow-hidden shadow-3xl group">
+            <div className="bg-slate-950 rounded-[2.5rem] md:rounded-[4rem] p-6 sm:p-8 md:p-12 text-white relative overflow-hidden shadow-3xl group">
                <div className="absolute top-0 right-0 w-80 h-80 bg-brand-blue/20 blur-[100px] -translate-y-1/2 translate-x-1/2 group-hover:scale-125 transition-transform duration-1000"></div>
-               <div className="relative z-10 space-y-10">
-                  <div className="flex items-center gap-6">
+               <div className="relative z-10 space-y-6 md:space-y-10">
+                  <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6">
                      <div className="w-16 h-16 bg-white/10 backdrop-blur-xl border border-white/10 rounded-[1.5rem] flex items-center justify-center">
                         <Wallet className="w-8 h-8 text-brand-blue" />
                      </div>
-                     <div className="text-left">
+                     <div className="text-center md:text-left">
                         <p className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40">Consolidated Balance</p>
-                        <h2 className="text-5xl md:text-7xl font-black font-display tracking-tighter mt-1">
+                        <h2 className="text-4xl md:text-7xl font-black font-display tracking-tighter mt-1">
                           {formatCurrency(profile?.walletBalance || 0)}
                         </h2>
                      </div>
@@ -166,8 +166,8 @@ export default function WalletPage() {
 
          {/* Stats Panel */}
          <div className="space-y-6">
-            <div className="bg-white p-8 rounded-[3rem] border border-slate-50 shadow-sm flex flex-col gap-6">
-               <h3 className="text-xl font-black font-display flex items-center gap-3 uppercase"><TrendingUp className="text-brand-blue" /> PERFORMANCE</h3>
+            <div className="bg-white p-6 md:p-8 rounded-[2rem] md:rounded-[3rem] border border-slate-50 shadow-sm flex flex-col gap-6">
+               <h3 className="text-lg md:text-xl font-black font-display flex items-center gap-3 uppercase"><TrendingUp className="text-brand-blue" /> PERFORMANCE</h3>
                <div className="space-y-4">
                   <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl">
                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Growth Rate</span>
@@ -184,7 +184,7 @@ export default function WalletPage() {
                </div>
             </div>
 
-            <div className="bg-brand-blue p-8 rounded-[3rem] text-white shadow-2xl shadow-blue-500/20 relative overflow-hidden group">
+            <div className="bg-brand-blue p-6 md:p-8 rounded-[2rem] md:rounded-[3rem] text-white shadow-2xl shadow-blue-500/20 relative overflow-hidden group">
                <HelpCircle className="absolute -right-4 -bottom-4 w-32 h-32 opacity-10 group-hover:rotate-12 transition-transform" />
                <h3 className="text-xl font-black font-display mb-2 uppercase text-left">Financial Guard</h3>
                <p className="text-[10px] font-bold opacity-70 uppercase leading-relaxed text-left">Royalties are calculated based on DSP reporting windows. Minimum disbursement is ₹1,000 INR.</p>

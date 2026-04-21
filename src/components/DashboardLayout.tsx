@@ -11,6 +11,7 @@ import {
   Search,
   Settings,
   Shield,
+  MessageSquare,
   Globe,
   Youtube,
   FileText,
@@ -37,6 +38,7 @@ const NAV_ITEMS = [
   { label: "Content ID", icon: ShieldAlert, path: "/dashboard/content-id" },
   { label: "OAC Request", icon: Youtube, path: "/dashboard/oac" },
   { label: "Reports", icon: FileText, path: "/dashboard/reports" },
+  { label: "Requests", icon: MessageSquare, path: "/dashboard/requests" },
   { label: "Support", icon: LifeBuoy, path: "/dashboard/support" },
   { label: "Profile", icon: Settings, path: "/dashboard/profile" },
 ];

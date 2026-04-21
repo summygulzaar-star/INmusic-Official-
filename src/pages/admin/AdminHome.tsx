@@ -131,11 +131,11 @@ export default function AdminHome() {
       <div className="grid lg:grid-cols-3 gap-10">
          {/* Charts / Intelligence */}
          <div className="lg:col-span-2 space-y-10">
-            <div className="bg-[#1E293B] p-10 rounded-[4rem] border border-slate-800 shadow-3xl overflow-hidden relative">
-               <div className="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-4 relative z-10">
+            <div className="bg-[#1E293B] p-6 md:p-10 rounded-[2.5rem] md:rounded-[4rem] border border-slate-800 shadow-3xl overflow-hidden relative">
+               <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 md:mb-10 gap-4 relative z-10">
                   <div className="flex items-center gap-4">
-                     <BarChart3 className="text-brand-blue w-8 h-8" />
-                     <h3 className="text-2xl font-black font-display text-white uppercase tracking-tight text-left">Intelligence Overview</h3>
+                     <BarChart3 className="text-brand-blue w-6 h-6 md:w-8 md:h-8" />
+                     <h3 className="text-lg md:text-2xl font-black font-display text-white uppercase tracking-tight text-left">Intelligence Overview</h3>
                   </div>
                   <div className="flex gap-2 items-center">
                      <span className="w-3 h-3 bg-brand-blue rounded-full"></span>
@@ -212,10 +212,10 @@ export default function AdminHome() {
          {/* Sidebar Content */}
          <div className="space-y-10">
             {/* Review Queue */}
-            <div className="bg-[#1E293B] rounded-[3.5rem] border border-slate-800 p-10 shadow-2xl relative overflow-hidden text-left font-display">
-               <div className="flex items-center justify-between mb-8">
-                  <h3 className="text-xl font-black font-display text-white uppercase flex items-center gap-4">
-                     <Disc className="text-brand-purple w-6 h-6 flex-shrink-0" /> Review Queue
+            <div className="bg-[#1E293B] rounded-[2.5rem] md:rounded-[3.5rem] border border-slate-800 p-6 md:p-10 shadow-2xl relative overflow-hidden text-left font-display">
+               <div className="flex items-center justify-between mb-6 md:mb-8">
+                  <h3 className="text-lg md:text-xl font-black font-display text-white uppercase flex items-center gap-3 md:gap-4">
+                     <Disc className="text-brand-purple w-5 h-5 md:w-6 md:h-6 flex-shrink-0" /> Review Queue
                   </h3>
                   <Link to="/admin/releases" className="text-[9px] font-black text-brand-blue uppercase hover:underline tracking-widest font-sans">Global Feed</Link>
                </div>
@@ -255,9 +255,9 @@ export default function AdminHome() {
             </div>
 
             {/* Quick Audit */}
-            <div className="bg-[#1E293B] rounded-[3.5rem] border border-slate-800 p-10 shadow-2xl relative overflow-hidden text-left">
-               <h3 className="text-xl font-black font-display text-white uppercase flex items-center gap-4 mb-8">
-                  <ShieldCheck className="text-emerald-500 w-6 h-6 flex-shrink-0" /> System Integrity
+            <div className="bg-[#1E293B] rounded-[2.5rem] md:rounded-[3.5rem] border border-slate-800 p-6 md:p-10 shadow-2xl relative overflow-hidden text-left">
+               <h3 className="text-lg md:text-xl font-black font-display text-white uppercase flex items-center gap-3 md:gap-4 mb-6 md:mb-8">
+                  <ShieldCheck className="text-emerald-500 w-5 h-5 md:w-6 md:h-6 flex-shrink-0" /> System Integrity
                </h3>
                <div className="space-y-4">
                   {[
@@ -268,7 +268,7 @@ export default function AdminHome() {
                      <div key={i} className="flex flex-col p-5 bg-slate-900 rounded-[2rem] border border-slate-800 text-left hover:border-slate-700 transition-colors">
                         <div className="flex items-center justify-between">
                            <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">{s.label}</span>
-                           <span className="text-[8px] font-black px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-500 uppercase">{s.status}</span>
+                           <span className="text-[8px] font-black px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-500 uppercase tracking-widest">{s.status.toUpperCase()}</span>
                         </div>
                         <p className="text-xs font-bold text-white mt-2 uppercase flex items-center gap-2 tracking-wider">
                            {s.val}

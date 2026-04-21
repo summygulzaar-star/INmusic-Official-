@@ -373,7 +373,7 @@ export default function Upload() {
         )}
       </AnimatePresence>
 
-      <div className="bg-white rounded-[2.5rem] md:rounded-[4rem] shadow-2xl p-6 md:p-16 border border-slate-50 relative overflow-hidden">
+      <div className="bg-white rounded-[2rem] md:rounded-[4rem] shadow-2xl p-4 sm:p-6 md:p-16 border border-slate-50 relative overflow-hidden">
         {isUploading && (
            <div className="absolute inset-0 bg-white/95 backdrop-blur-2xl z-[100] flex flex-col items-center justify-center p-6 md:p-12 gap-8 md:gap-10">
               <div className="relative group">
@@ -412,9 +412,9 @@ export default function Upload() {
              {/* STEP 1: RELEASE TYPE */}
              {step === 0 && (
                 <motion.div key="s1" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 1.05 }} className="space-y-12">
-                   <div className="text-center max-w-2xl mx-auto space-y-4">
-                      <h2 className="text-3xl md:text-5xl font-black font-display tracking-tight uppercase">Select <span className="text-brand-blue">Release Core</span></h2>
-                      <p className="text-slate-400 font-medium">Define the architectural scope of your project.</p>
+                   <div className="text-center max-w-2xl mx-auto space-y-4 px-2">
+                      <h2 className="text-2xl md:text-5xl font-black font-display tracking-tight uppercase">Select <span className="text-brand-blue">Release Core</span></h2>
+                      <p className="text-sm md:text-base text-slate-400 font-medium">Define the architectural scope of your project.</p>
                    </div>
                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
                       {["Single", "EP", "Album"].map((type) => (
@@ -423,7 +423,7 @@ export default function Upload() {
                           type="button"
                           onClick={() => { setValue("releaseType", type as any); nextStep(); }}
                           className={cn(
-                            "group p-12 rounded-[3.5rem] border-2 flex flex-col items-center gap-6 transition-all transform hover:-translate-y-4",
+                            "group p-8 md:p-12 rounded-[2.5rem] md:rounded-[3.5rem] border-2 flex flex-col items-center gap-6 transition-all transform hover:-translate-y-4",
                             watchAll.releaseType === type ? "border-brand-blue bg-brand-blue/5 shadow-2xl" : "border-slate-100 hover:border-brand-blue bg-slate-50 shadow-sm"
                           )}
                         >

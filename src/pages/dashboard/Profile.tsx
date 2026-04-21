@@ -115,10 +115,10 @@ export default function Profile() {
                </button>
             </div>
          </div>
-         <div className="text-center md:text-left space-y-3">
-            <div className="flex items-center justify-center md:justify-start gap-4">
-               <h1 className="text-5xl font-black font-display tracking-tight uppercase">{profile?.displayName}</h1>
-               <BadgeCheck className="w-8 h-8 text-brand-blue fill-brand-blue/10" />
+         <div className="text-center md:text-left space-y-3 px-2">
+            <div className="flex flex-col md:flex-row items-center justify-center md:justify-start gap-2 md:gap-4">
+               <h1 className="text-3xl md:text-5xl font-black font-display tracking-tight uppercase">{profile?.displayName}</h1>
+               <BadgeCheck className="w-6 h-6 md:w-8 md:h-8 text-brand-blue fill-brand-blue/10" />
             </div>
             <p className="text-slate-400 font-bold uppercase tracking-widest flex items-center justify-center md:justify-start gap-2">
                <Zap className="w-4 h-4 text-brand-blue" /> Master Artist Profile

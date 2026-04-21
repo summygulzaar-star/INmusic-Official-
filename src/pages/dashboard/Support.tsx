@@ -58,11 +58,11 @@ export default function Support() {
     <div className="space-y-12 pb-20">
       <div className="flex flex-col lg:flex-row gap-12">
          {/* New Ticket Form */}
-         <div className="flex-1 space-y-8">
-            <h1 className="text-5xl font-black font-display tracking-tight uppercase">Support <span className="text-brand-blue">Nexus</span></h1>
-            <p className="text-slate-400 font-medium">Connect with our technical support team for priority assistance and issue resolution.</p>
+         <div className="flex-1 space-y-6 md:space-y-8">
+            <h1 className="text-3xl md:text-5xl font-black font-display tracking-tight uppercase px-2 md:px-0 text-left">Support <span className="text-brand-blue">Nexus</span></h1>
+            <p className="text-sm md:text-base text-slate-400 font-medium px-2 md:px-0 text-left">Connect with our technical support team for priority assistance and issue resolution.</p>
 
-            <div className="bg-white rounded-[4rem] p-10 md:p-12 border border-slate-100 shadow-sm relative overflow-hidden group">
+            <div className="bg-white rounded-[2.5rem] md:rounded-[4rem] p-6 sm:p-10 md:p-12 border border-slate-100 shadow-sm relative overflow-hidden group">
                <div className="absolute top-0 right-0 w-64 h-64 bg-brand-blue/5 blur-[80px] -translate-y-1/2 translate-x-1/3"></div>
                <div className="relative z-10 space-y-8">
                   <div className="flex items-center gap-6">
@@ -133,13 +133,13 @@ export default function Support() {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: i * 0.1 }}
                     key={t.id} 
-                    className="bg-white p-8 rounded-[3rem] border border-slate-50 shadow-sm space-y-4 group hover:shadow-xl transition-all"
+                    className="bg-white p-6 md:p-8 rounded-[2rem] md:rounded-[3rem] border border-slate-50 shadow-sm space-y-4 group hover:shadow-xl transition-all"
                   >
                      <div className="flex items-start justify-between">
                         <span className={cn(
                            "px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border",
                            t.status === 'resolved' ? "bg-emerald-50 border-emerald-100 text-emerald-600" : "bg-amber-50 border-amber-100 text-amber-600"
-                        )}>{t.status}</span>
+                        )}>{t.status.toUpperCase()}</span>
                         <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{new Date(t.createdAt).toLocaleDateString()}</span>
                      </div>
                      <div>

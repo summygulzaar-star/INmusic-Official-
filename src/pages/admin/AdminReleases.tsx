@@ -39,7 +39,7 @@ export default function AdminReleases() {
                  filter === f ? "bg-brand-purple text-white shadow-xl shadow-purple-900/40" : "bg-slate-800 text-slate-500 hover:text-white"
                )}
              >
-               {f}
+               {f.toUpperCase()}
              </button>
            ))}
         </div>
@@ -95,7 +95,7 @@ export default function AdminReleases() {
                           r.status === 'approved' ? "bg-brand-blue/10 text-brand-blue ring-1 ring-brand-blue/30" :
                           "bg-slate-500/10 text-slate-500"
                        )}>
-                          {r.status}
+                          {r.status?.toUpperCase()}
                        </span>
                     </td>
                     <td className="px-6 py-8 font-mono text-xs text-slate-500">

@@ -2,6 +2,7 @@ import React, { lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import PageLoader from './components/ui/Loading';
+import { Toaster } from 'sonner';
 
 // Lazy loading for optimization
 const Home = lazy(() => import('./pages/Home'));
@@ -20,6 +21,7 @@ const Labels = lazy(() => import('./pages/dashboard/Labels'));
 const Wallet = lazy(() => import('./pages/dashboard/Wallet'));
 const Profile = lazy(() => import('./pages/dashboard/Profile'));
 const Support = lazy(() => import('./pages/dashboard/Support'));
+const Requests = lazy(() => import('./pages/dashboard/Requests'));
 const OACRequest = lazy(() => import('./pages/dashboard/OACRequest'));
 const ContentID = lazy(() => import('./pages/dashboard/ContentID'));
 const Reports = lazy(() => import('./pages/dashboard/Reports'));
@@ -37,6 +39,7 @@ const AdminLabels = lazy(() => import('./pages/admin/AdminLabels'));
 const AdminOAC = lazy(() => import('./pages/admin/AdminOAC'));
 const AdminContentID = lazy(() => import('./pages/admin/AdminContentID'));
 const AdminSupport = lazy(() => import('./pages/admin/AdminSupport'));
+const AdminUserRequests = lazy(() => import('./pages/admin/AdminUserRequests'));
 const AdminNotifications = lazy(() => import('./pages/admin/AdminNotifications'));
 const AdminBroadcasts = lazy(() => import('./pages/admin/AdminBroadcasts'));
 const AdminHistory = lazy(() => import('./pages/admin/AdminHistory'));
@@ -75,6 +78,7 @@ function AppContent() {
             <Route path="oac" element={<AdminOAC />} />
             <Route path="content-id" element={<AdminContentID />} />
             <Route path="support" element={<AdminSupport />} />
+            <Route path="user-requests" element={<AdminUserRequests />} />
             <Route path="notifications" element={<AdminNotifications />} />
             <Route path="broadcasts" element={<AdminBroadcasts />} />
             <Route path="history" element={<AdminHistory />} />
@@ -90,6 +94,7 @@ function AppContent() {
             <Route path="wallet" element={<Wallet />} />
             <Route path="profile" element={<Profile />} />
             <Route path="support" element={<Support />} />
+            <Route path="requests" element={<Requests />} />
             <Route path="oac" element={<OACRequest />} />
             <Route path="content-id" element={<ContentID />} />
             <Route path="reports" element={<Reports />} />
@@ -105,6 +110,7 @@ function AppContent() {
 export default function App() {
   return (
     <AuthProvider>
+      <Toaster position="top-right" expand={false} richColors />
       <AppContent />
     </AuthProvider>
   );

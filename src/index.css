@@ -46,8 +46,21 @@
   animation: gradientMove 6s infinite linear;
 }
 
+@utility animate-pulse-subtle {
+  animation: pulseSubtle 4s infinite ease-in-out;
+}
+
+@utility neon-glow {
+  filter: drop-shadow(0 0 10px currentColor);
+}
+
 @keyframes gradientMove {
   0% { background-position: 0% }
   100% { background-position: 100% }
+}
+
+@keyframes pulseSubtle {
+  0%, 100% { opacity: 1; filter: brightness(1.2) drop-shadow(0 0 15px currentColor); }
+  50% { opacity: 0.4; filter: brightness(0.8) drop-shadow(0 0 5px currentColor); }
 }
 

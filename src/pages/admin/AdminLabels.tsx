@@ -18,21 +18,21 @@ export default function AdminLabels() {
 
   return (
     <div className="space-y-10">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 md:gap-8">
         <div>
-           <h1 className="text-5xl font-black font-display tracking-tight uppercase">Master Labels</h1>
-           <p className="text-slate-400 font-medium">Manage distribution agreements and primary label entities.</p>
+           <h1 className="text-3xl md:text-5xl font-black font-display tracking-tight uppercase">Master Labels</h1>
+           <p className="text-xs md:text-sm text-slate-400 font-medium">Manage distribution agreements and primary label entities.</p>
         </div>
-        <div className="relative">
-           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+        <div className="relative w-full lg:w-auto">
+           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-slate-500" />
            <input 
              placeholder="Search labels..."
-             className="bg-[#1E293B] border-slate-700 rounded-2xl py-4 pl-14 pr-8 text-sm focus:ring-2 focus:ring-brand-purple/20 transition-all font-medium min-w-[300px]"
+             className="w-full bg-[#1E293B] border-slate-700 rounded-xl md:rounded-2xl py-3.5 md:py-4 pl-12 md:pl-14 pr-6 md:pr-8 text-xs md:text-sm focus:ring-2 focus:ring-brand-purple/20 transition-all font-medium md:min-w-[300px]"
            />
         </div>
       </div>
 
-      <div className="bg-[#1E293B] rounded-[3.5rem] border border-slate-800 p-12">
+      <div className="bg-[#1E293B] rounded-[2.5rem] md:rounded-[3.5rem] border border-slate-800 p-6 md:p-12">
          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {labels.map((label, i) => (
               <div key={i} className="p-8 bg-slate-900/50 rounded-[2.5rem] border border-slate-800 hover:border-brand-blue transition-all group">

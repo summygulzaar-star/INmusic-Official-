@@ -128,7 +128,7 @@ export default function MyReleases() {
                  className="bg-white p-6 md:p-8 rounded-[2.5rem] md:rounded-[4rem] shadow-sm border border-slate-100 group hover:shadow-3xl transition-all duration-700 relative flex flex-col"
                >
                   {/* Status Indicator */}
-                  <div className="absolute top-6 right-6 md:top-10 md:right-10 z-20">
+                  <div className="absolute top-4 right-4 md:top-10 md:right-10 z-20">
                      <span className={cn(
                         "px-3 md:px-4 py-1.5 md:py-2 rounded-full text-[8px] md:text-[9px] font-black uppercase tracking-[0.2em] shadow-sm backdrop-blur-md",
                         STATUSES.find(s => s.id === release.status)?.color || "bg-slate-100 text-slate-500"
@@ -138,7 +138,7 @@ export default function MyReleases() {
                   </div>
 
                   {/* Artwork Section */}
-                  <div className="relative aspect-square rounded-[1.5rem] md:rounded-[3rem] overflow-hidden mb-6 md:mb-8 shadow-2xl bg-slate-100">
+                  <div className="relative aspect-square rounded-[2rem] md:rounded-[3rem] overflow-hidden mb-6 md:mb-8 shadow-2xl bg-slate-100">
                      <img 
                        src={release.coverUrl} 
                        className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" 
@@ -159,28 +159,27 @@ export default function MyReleases() {
                   </div>
 
                   {/* Info Section */}
-                  <div className="flex-1 space-y-6">
+                  <div className="flex-1 space-y-4 md:space-y-6">
                      <div>
                         <div className="flex items-center justify-between mb-2">
                            <p className="text-[10px] font-black text-brand-blue uppercase tracking-widest">{release.releaseType || "Single"}</p>
-                           <p className="text-[9px] font-bold text-slate-300 uppercase tracking-widest">{new Date(release.createdAt).toLocaleDateString()}</p>
+                           <p className="text-[8px] md:text-[9px] font-bold text-slate-300 uppercase tracking-widest">{new Date(release.createdAt).toLocaleDateString()}</p>
                         </div>
-                        <h3 className="text-2xl font-black font-display tracking-tight text-slate-800 line-clamp-1 group-hover:text-brand-blue transition-colors">
+                        <h3 className="text-xl md:text-2xl font-black font-display tracking-tight text-slate-800 line-clamp-1 group-hover:text-brand-blue transition-colors">
                            {release.title}
                         </h3>
-                        <p className="text-sm text-slate-400 font-bold uppercase tracking-widest mt-1">
+                        <p className="text-xs md:text-sm text-slate-400 font-bold uppercase tracking-widest mt-1">
                            {release.artist}
                         </p>
                         <div className="mt-4 flex flex-wrap gap-2">
-                           <span className="text-[8px] font-black uppercase px-2 py-1 bg-slate-50 text-slate-400 rounded-lg border border-slate-100">Lang: {release.language}</span>
-                           <span className="text-[8px] font-black uppercase px-2 py-1 bg-slate-50 text-slate-400 rounded-lg border border-slate-100">Genre: {release.primaryGenre}</span>
-                           <span className="text-[8px] font-black uppercase px-2 py-1 bg-slate-50 text-slate-400 rounded-lg border border-slate-100">Label: {release.labelName}</span>
+                           <span className="text-[8px] font-black uppercase px-2 py-1 bg-slate-50 text-slate-400 rounded-lg border border-slate-100 italic">Lang: {release.language}</span>
+                           <span className="text-[8px] font-black uppercase px-2 py-1 bg-slate-50 text-slate-400 rounded-lg border border-slate-100 italic">Genre: {release.primaryGenre}</span>
+                           <span className="text-[8px] font-black uppercase px-2 py-1 bg-slate-50 text-slate-400 rounded-lg border border-slate-100 italic">Label: {release.labelName}</span>
                         </div>
-                        <div className="mt-4 space-y-1">
+                        <div className="mt-4 space-y-1.5">
                            <p className="text-[9px] font-medium text-slate-400 italic">Lyricist: {release.lyricist}</p>
                            <p className="text-[9px] font-medium text-slate-400 italic">Composer: {release.composer}</p>
                            <p className="text-[9px] font-medium text-slate-400 italic">Producer: {release.producer}</p>
-                           <p className="text-[9px] font-medium text-slate-400 leading-tight line-clamp-2 mt-1">Lyrics: {release.lyrics}</p>
                         </div>
                      </div>
 
@@ -199,7 +198,7 @@ export default function MyReleases() {
                         </div>
                      </div>
 
-                     {release.status === 'live' && release.platformLinks && Object.values(release.platformLinks).some(link => !!link) && (
+                     {(release.status === 'live' || release.status === 'approved') && release.platformLinks && Object.values(release.platformLinks).some(link => !!link) && (
                         <div className="pt-6 border-t border-slate-50">
                            <p className="text-[8px] uppercase font-black text-brand-blue tracking-[0.2em] mb-3">Release Live On</p>
                            <div className="flex flex-wrap gap-2">

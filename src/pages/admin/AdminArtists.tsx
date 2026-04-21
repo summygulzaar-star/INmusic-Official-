@@ -18,27 +18,27 @@ export default function AdminArtists() {
 
   return (
     <div className="space-y-10">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 md:gap-8">
         <div>
-           <h1 className="text-5xl font-black font-display tracking-tight uppercase">Artist Index</h1>
-           <p className="text-slate-400 font-medium">Verified artist identities and professional metadata profiles.</p>
+           <h1 className="text-3xl md:text-5xl font-black font-display tracking-tight uppercase">Artist Index</h1>
+           <p className="text-xs md:text-sm text-slate-400 font-medium">Verified artist identities and professional metadata profiles.</p>
         </div>
-        <div className="relative">
-           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+        <div className="relative w-full lg:w-auto">
+           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-slate-500" />
            <input 
              placeholder="Search artists..."
-             className="bg-[#1E293B] border-slate-700 rounded-2xl py-4 pl-14 pr-8 text-sm focus:ring-2 focus:ring-brand-purple/20 transition-all font-medium min-w-[300px]"
+             className="w-full bg-[#1E293B] border-slate-700 rounded-xl md:rounded-2xl py-3.5 md:py-4 pl-12 md:pl-14 pr-6 md:pr-8 text-xs md:text-sm focus:ring-2 focus:ring-brand-purple/20 transition-all font-medium md:min-w-[300px]"
            />
         </div>
       </div>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
          {artists.map((artist, i) => (
-           <div key={i} className="bg-[#1E293B] p-10 rounded-[4rem] border border-slate-800 hover:border-brand-purple transition-all group overflow-hidden relative">
+           <div key={i} className="bg-[#1E293B] p-8 md:p-10 rounded-[2.5rem] md:rounded-[4rem] border border-slate-800 hover:border-brand-purple transition-all group overflow-hidden relative">
               <div className="absolute top-0 right-0 w-32 h-32 bg-brand-purple/5 blur-[40px] rounded-full translate-x-1/2 -translate-y-1/2"></div>
-              <div className="flex items-center justify-between mb-8">
-                 <div className="w-20 h-20 rounded-[2rem] bg-slate-800 flex items-center justify-center border-4 border-slate-900 group-hover:rotate-6 transition-transform shadow-2xl">
-                    <Mic2 className="w-10 h-10 text-brand-purple" />
+              <div className="flex items-center justify-between mb-6 md:mb-8">
+                 <div className="w-16 h-16 md:w-20 md:h-20 rounded-[1.5rem] md:rounded-[2rem] bg-slate-800 flex items-center justify-center border-4 border-slate-900 group-hover:rotate-6 transition-transform shadow-2xl">
+                    <Mic2 className="w-8 h-8 md:w-10 md:h-10 text-brand-purple" />
                  </div>
                  <button className="p-3 text-slate-600 hover:text-white transition-colors">
                     <MoreVertical className="w-5 h-5" />

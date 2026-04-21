@@ -185,9 +185,70 @@
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["userId", "subject", "message", "status", "createdAt"]
+    },
+    "UserRequest": {
+      "title": "UserRequest",
+      "description": "Centralized request for profile changes, metadata updates, etc.",
+      "type": "object",
+      "properties": {
+        "ticketId": { "type": "string" },
+        "userId": { "type": "string" },
+        "userName": { "type": "string" },
+        "userEmail": { "type": "string" },
+        "releaseId": { "type": "string" },
+        "type": { "type": "string" },
+        "data": { "type": "object" },
+        "priority": { "type": "string", "enum": ["normal", "high", "urgent"] },
+        "status": { "type": "string", "enum": ["pending", "in_review", "approved", "rejected", "completed"] },
+        "adminResponse": { "type": "string" },
+        "adminNotes": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["ticketId", "userId", "type", "status", "priority", "createdAt"]
+    },
+    "RequestLog": {
+      "title": "RequestLog",
+      "description": "Timeline log for a specific request",
+      "type": "object",
+      "properties": {
+        "requestId": { "type": "string" },
+        "userId": { "type": "string" },
+        "action": { "type": "string" },
+        "adminId": { "type": "string" },
+        "note": { "type": "string" },
+        "timestamp": { "type": "string", "format": "date-time" }
+      },
+      "required": ["requestId", "userId", "action", "timestamp"]
+    },
+    "UserNotification": {
+      "title": "UserNotification",
+      "description": "User-specific alerts for request updates, royalties, etc.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "title": { "type": "string" },
+        "message": { "type": "string" },
+        "type": { "type": "string", "enum": ["info", "success", "warning", "error"] },
+        "read": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "title", "message", "read", "createdAt"]
     }
   },
   "firestore": {
+    "/user_notifications/{notificationId}": {
+      "schema": "UserNotification",
+      "description": "Individual artist notifications"
+    },
+    "/user_requests/{requestId}": {
+      "schema": "UserRequest",
+      "description": "Centralized artist requests"
+    },
+    "/request_logs/{logId}": {
+      "schema": "RequestLog",
+      "description": "Timeline of request actions"
+    },
     "/system/config": {
       "schema": "SystemConfig",
       "description": "Global configuration document"
