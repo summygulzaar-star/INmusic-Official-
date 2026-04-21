@@ -44,8 +44,18 @@ const AdminNotifications = lazy(() => import('./pages/admin/AdminNotifications')
 const AdminBroadcasts = lazy(() => import('./pages/admin/AdminBroadcasts'));
 const AdminHistory = lazy(() => import('./pages/admin/AdminHistory'));
 
+function PrivateRoute({ children, adminOnly = false }: { children: React.ReactNode, adminOnly?: boolean }) {
+  const { user, loading, isAdmin } = useAuth();
+  
+  if (loading) return <PageLoader message="Validating Credentials..." />;
+  if (!user) return <Navigate to="/auth?mode=login" />;
+  if (adminOnly && !isAdmin) return <Navigate to="/dashboard" />;
+  
+  return <>{children}</>;
+}
+
 function AppContent() {
-  const { user, loading, isAdmin, connectionError } = useAuth();
+  const { user, loading, connectionError } = useAuth();
 
   if (loading) {
     return <PageLoader message={connectionError ? "Connection Latency Detected..." : "Initializing Core Sync..."} />;
@@ -66,7 +76,7 @@ function AppContent() {
           <Route path="/forgot-password" element={<Navigate to="/auth?mode=forgot" />} />
 
           {/* Admin Routes */}
-          <Route path="/admin" element={isAdmin ? <AdminLayout /> : <Navigate to="/auth?mode=login" />}>
+          <Route path="/admin" element={<PrivateRoute adminOnly><AdminLayout /></PrivateRoute>}>
             <Route index element={<AdminHome />} />
             <Route path="releases" element={<AdminReleases />} />
             <Route path="review/:releaseId" element={<AdminReview />} />
@@ -85,7 +95,7 @@ function AppContent() {
           </Route>
 
           {/* Dashboard Routes */}
-          <Route path="/dashboard" element={user ? <DashboardLayout /> : <Navigate to="/auth?mode=login" />}>
+          <Route path="/dashboard" element={<PrivateRoute><DashboardLayout /></PrivateRoute>}>
             <Route index element={<Overview />} />
             <Route path="releases" element={<MyReleases />} />
             <Route path="upload" element={<Upload />} />

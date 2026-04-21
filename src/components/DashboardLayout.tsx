@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { 
   LayoutDashboard, 
@@ -21,12 +21,16 @@ import {
   Zap,
   Menu,
   X,
-  LifeBuoy
+  LifeBuoy,
+  Clock,
+  CheckCircle2
 } from "lucide-react";
-import { auth } from "../lib/firebase";
+import { auth, db } from "../lib/firebase";
 import { useAuth } from "../context/AuthContext";
 import { cn } from "../lib/utils";
 import { motion, AnimatePresence } from "motion/react";
+import { collection, query, where, onSnapshot, orderBy, limit, doc, updateDoc, writeBatch } from "firebase/firestore";
+import { toast } from "sonner";
 
 const NAV_ITEMS = [
   { label: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
@@ -44,10 +48,51 @@ const NAV_ITEMS = [
 ];
 
 export default function DashboardLayout() {
-  const { profile, isAdmin } = useAuth();
+  const { user, profile, isAdmin } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
   const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024);
+  const [notifications, setNotifications] = useState<any[]>([]);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const unreadCount = notifications.filter(n => !n.read).length;
+
+  useEffect(() => {
+    if (!user) return;
+    const q = query(
+      collection(db, "user_notifications"),
+      where("userId", "==", user.uid),
+      orderBy("createdAt", "desc"),
+      limit(20)
+    );
+    
+    const unsubscribe = onSnapshot(q, (snap) => {
+      setNotifications(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+    });
+
+    return unsubscribe;
+  }, [user]);
+
+  const markAsRead = async (id: string) => {
+    try {
+      await updateDoc(doc(db, "user_notifications", id), { read: true });
+    } catch (err) {
+      console.error("Failed to mark notification as read:", err);
+    }
+  };
+
+  const markAllAsRead = async () => {
+    if (!user || unreadCount === 0) return;
+    try {
+      const batch = writeBatch(db);
+      notifications.filter(n => !n.read).forEach(n => {
+        batch.update(doc(db, "user_notifications", n.id), { read: true });
+      });
+      await batch.commit();
+      toast.success("Notification chronicle cleared.");
+    } catch (err) {
+      toast.error("Batch update failure.");
+    }
+  };
 
   // Close sidebar on navigation on mobile
   React.useEffect(() => {
@@ -225,21 +270,105 @@ export default function DashboardLayout() {
             <div className="hidden xl:flex items-center gap-2 mr-4">
                <div className="flex -space-x-3">
                   {[1, 2, 3].map(i => (
-                    <div key={i} className="w-10 h-10 rounded-full border-4 border-white bg-slate-100 flex items-center justify-center text-[10px] font-black">
-                       JD
+                    <div key={i} className="w-10 h-10 rounded-full border-4 border-white bg-slate-100 flex items-center justify-center text-[10px] font-black group hover:z-30 transition-all hover:scale-110 cursor-pointer overflow-hidden">
+                       <img src={`https://picsum.photos/seed/artist${i}/100/100`} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
                     </div>
                   ))}
                </div>
                <div className="flex flex-col ml-2">
                   <span className="text-[10px] font-black text-slate-800 uppercase tracking-widest leading-none">Collaborators</span>
-                  <span className="text-[9px] font-bold text-slate-400 uppercase mt-1">4 Online</span>
+                  <span className="text-[9px] font-bold text-slate-400 uppercase mt-1">Synced & Online</span>
                </div>
             </div>
 
-            <button className="relative w-10 h-10 lg:w-14 lg:h-14 bg-white rounded-xl lg:rounded-[1.5rem] flex items-center justify-center text-slate-400 hover:text-slate-950 shadow-xl border border-slate-50 transition-all hover:-translate-y-1 group">
-              <Bell className="w-5 h-5 lg:w-6 lg:h-6 transition-transform group-hover:rotate-12" />
-              <span className="absolute top-2 right-2 lg:top-4 lg:right-4 w-2 h-2 lg:w-2.5 lg:h-2.5 bg-brand-blue rounded-full border-2 lg:border-4 border-white shadow-sm"></span>
-            </button>
+            <div className="relative">
+              <button 
+                onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+                className="relative w-10 h-10 lg:w-14 lg:h-14 bg-white rounded-xl lg:rounded-[1.5rem] flex items-center justify-center text-slate-400 hover:text-slate-950 shadow-xl border border-slate-50 transition-all hover:-translate-y-1 group"
+              >
+                <Bell className="w-5 h-5 lg:w-6 lg:h-6 transition-transform group-hover:rotate-12" />
+                {unreadCount > 0 && (
+                  <span className="absolute top-2 right-2 lg:top-4 lg:right-4 w-2 h-2 lg:w-3 lg:h-3 bg-brand-blue rounded-full border-2 lg:border-4 border-white shadow-sm animate-pulse"></span>
+                )}
+              </button>
+
+              <AnimatePresence>
+                {isNotificationsOpen && (
+                  <>
+                    <div className="fixed inset-0 z-40" onClick={() => setIsNotificationsOpen(false)}></div>
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      className="absolute right-0 mt-4 w-80 md:w-96 bg-white rounded-[2rem] shadow-4xl border border-slate-100 z-50 overflow-hidden"
+                    >
+                      <div className="p-6 border-b border-slate-50 flex items-center justify-between">
+                        <h4 className="text-sm font-black uppercase tracking-widest">Global Signals</h4>
+                        {unreadCount > 0 && (
+                          <button 
+                            onClick={markAllAsRead}
+                            className="text-[9px] font-black text-brand-blue uppercase hover:underline"
+                          >
+                            Purge Unread
+                          </button>
+                        )}
+                      </div>
+                      <div className="max-h-[25rem] overflow-y-auto custom-scrollbar">
+                        {notifications.map((n) => (
+                          <div 
+                            key={n.id} 
+                            onClick={() => {
+                              markAsRead(n.id);
+                              if (n.type === 'request') {
+                                window.location.href = '/dashboard/requests';
+                              }
+                            }}
+                            className={cn(
+                              "p-6 border-b border-slate-50 cursor-pointer hover:bg-slate-50 transition-colors flex gap-4 items-start relative group",
+                              !n.read && "bg-brand-blue/5"
+                            )}
+                          >
+                            <div className={cn(
+                              "w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-sm",
+                              n.type === 'request' ? "bg-amber-100 text-amber-600" : "bg-brand-blue/10 text-brand-blue"
+                            )}>
+                              {n.type === 'request' ? <Clock className="w-5 h-5" /> : <CheckCircle2 className="w-5 h-5" />}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className={cn("text-xs uppercase tracking-tight", n.read ? "font-bold text-slate-500" : "font-black text-slate-900")}>
+                                {n.title}
+                              </p>
+                              <p className="text-[11px] text-slate-400 mt-1 line-clamp-2 leading-relaxed">
+                                {n.message}
+                              </p>
+                              <span className="text-[9px] font-bold text-slate-300 mt-2 block uppercase tracking-widest">
+                                {new Date(n.createdAt).toLocaleDateString()}
+                              </span>
+                            </div>
+                            {!n.read && (
+                              <div className="w-1.5 h-1.5 bg-brand-blue rounded-full mt-2 shrink-0"></div>
+                            )}
+                          </div>
+                        ))}
+                        {notifications.length === 0 && (
+                          <div className="p-12 text-center">
+                            <Bell className="w-10 h-10 text-slate-100 mx-auto mb-4" />
+                            <p className="text-[10px] font-black uppercase tracking-widest text-slate-300">Quiet Sector. No signals detected.</p>
+                          </div>
+                        )}
+                      </div>
+                      <Link 
+                        to="/dashboard/support" 
+                        className="block p-4 text-center text-[10px] font-black uppercase tracking-widest bg-slate-50 hover:bg-slate-100 text-slate-400 transition-colors"
+                        onClick={() => setIsNotificationsOpen(false)}
+                      >
+                        Access Nexus Intelligence
+                      </Link>
+                    </motion.div>
+                  </>
+                )}
+              </AnimatePresence>
+            </div>
             
             <Link 
               to="/dashboard/upload"

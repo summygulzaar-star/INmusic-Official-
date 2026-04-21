@@ -140,6 +140,24 @@ export default function AdminReview() {
     setAiResult(null);
   };
 
+  const downloadFile = async (url: string, filename: string) => {
+    try {
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (err) {
+      // Fallback to direct navigation if fetch fails (CORS issue etc)
+      window.open(url, "_blank");
+    }
+  };
+
   if (loading) return <div className="p-10 text-white animate-pulse">Initializing Master Reviewer...</div>;
   if (!release) return <div className="p-10 text-white">Release not found.</div>;
 
@@ -190,6 +208,12 @@ export default function AdminReview() {
                         {replacingMedia === 'audio' ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : <FileMusic className="w-4 h-4 md:w-5 md:h-5" />}
                      </button>
                   </div>
+                  <button 
+                    onClick={() => downloadFile(release.coverUrl, `${release.title || 'cover'}_artwork.jpg`)}
+                    className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-white/10 backdrop-blur-xl flex items-center justify-center hover:bg-white/20 text-white transition-all shadow-xl"
+                  >
+                     <Download className="w-4 h-4 md:w-5 md:h-5" />
+                  </button>
                </div>
 
                <div className="absolute bottom-6 left-6 right-6 md:bottom-12 md:left-12 md:right-12 flex items-center justify-between">
@@ -202,9 +226,12 @@ export default function AdminReview() {
                         <p className="text-xs md:text-sm font-bold text-white uppercase">HI-FI MASTER</p>
                      </div>
                   </div>
-                  <a href={release.audioUrl} download className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-white/10 backdrop-blur-xl flex items-center justify-center hover:bg-white/20 transition-colors">
+                  <button 
+                    onClick={() => downloadFile(release.audioUrl, `${release.title || 'audio'}_master.wav`)}
+                    className="w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-white/10 backdrop-blur-xl flex items-center justify-center hover:bg-white/20 transition-colors"
+                  >
                      <Download className="w-4 h-4 md:w-5 md:h-5" />
-                  </a>
+                  </button>
                </div>
             </div>
 

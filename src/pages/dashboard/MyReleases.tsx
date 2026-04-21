@@ -16,11 +16,14 @@ import {
   Clock,
   Trash2,
   FileText,
-  ArrowRight
+  ArrowRight,
+  Download,
+  Image as ImageIcon
 } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "motion/react";
+import { toast } from "sonner";
 
 const STATUSES = [
   { id: 'all', label: 'All Releases' },
@@ -75,6 +78,28 @@ export default function MyReleases() {
                           r.artist?.toLowerCase().includes(search.toLowerCase());
     return matchesFilter && matchesSearch;
   });
+
+  const downloadFile = async (url: string, filename: string) => {
+    try {
+      toast.loading("Preparing asset for secure transmission...");
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+      toast.success("Extraction complete.");
+    } catch (error) {
+      console.error("Download failed:", error);
+      // Fallback: Open in new tab
+      window.open(url, "_blank");
+      toast.info("Secondary transmission protocol initiated.");
+    }
+  };
 
   return (
     <div className="space-y-12 pb-24">
@@ -137,13 +162,27 @@ export default function MyReleases() {
                      </span>
                   </div>
 
-                  {/* Artwork Section */}
+                   {/* Artwork Section */}
                   <div className="relative aspect-square rounded-[2rem] md:rounded-[3rem] overflow-hidden mb-6 md:mb-8 shadow-2xl bg-slate-100">
                      <img 
                        src={release.coverUrl} 
                        className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" 
                        referrerPolicy="no-referrer" 
                      />
+                     <div className="absolute inset-x-0 bottom-0 p-6 flex gap-2 translate-y-full group-hover:translate-y-0 transition-transform duration-500 z-30">
+                        <button 
+                          onClick={() => downloadFile(release.coverUrl, `${release.title}_Artwork.jpg`)}
+                          className="flex-1 py-3 bg-white/10 backdrop-blur-md text-white border border-white/20 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-white/20 transition-all flex items-center justify-center gap-2"
+                        >
+                          <ImageIcon className="w-3 h-3" /> Artwork
+                        </button>
+                        <button 
+                          onClick={() => downloadFile(release.audioUrl, `${release.title}_Master.wav`)}
+                          className="flex-1 py-3 bg-brand-blue text-white rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-brand-blue/90 shadow-xl shadow-blue-500/20 transition-all flex items-center justify-center gap-2"
+                        >
+                          <Download className="w-3 h-3" /> Audio
+                        </button>
+                     </div>
                      <div className="absolute inset-0 bg-linear-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col justify-end p-8 gap-4">
                         <Link 
                           to={`/dashboard/releases/${release.id}`}
@@ -151,7 +190,8 @@ export default function MyReleases() {
                         >
                            Track Assets <ChevronRight className="w-4 h-4" />
                         </Link>
-                        <div className="flex gap-3 transform translate-y-8 group-hover:translate-y-0 transition-transform delay-75">
+                        <div className="flex gap-3 transform translate-y-8 group-hover:translate-y-0 transition-transform delay-75 invisible group-hover:visible">
+                           {/* Keep these existing buttons or replace them with a single 'Manage' one */}
                            <button className="flex-1 py-3 bg-white/10 backdrop-blur-md text-white border border-white/20 rounded-xl text-[9px] font-bold uppercase tracking-widest hover:bg-white/20 transition-all">Edit</button>
                            <button className="flex-1 py-3 bg-rose-500/80 backdrop-blur-md text-white rounded-xl text-[9px] font-bold uppercase tracking-widest hover:bg-rose-600 transition-all">Takedown</button>
                         </div>

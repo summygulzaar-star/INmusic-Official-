@@ -35,13 +35,17 @@ service cloud.firestore {
     }
 
     // --- Validation Blueprints ---
+    function isString(val) { return val is string; }
+    function isTimestamp(val) { return val is timestamp; }
+    function isDate(val) { return isString(val) || isTimestamp(val); }
+
     function isValidUser(data) {
       return data.email is string && data.email.size() <= 256 &&
              data.displayName is string && data.displayName.size() <= 128 &&
              data.role in ['artist', 'admin', 'content_manager', 'finance_admin', 'support'] &&
              data.walletBalance is number &&
              data.status in ['active', 'suspended'] &&
-             data.createdAt is string &&
+             isDate(data.createdAt) &&
              data.keys().hasAll(['email', 'displayName', 'role', 'walletBalance', 'status', 'createdAt']) &&
              data.keys().size() >= 6;
     }
@@ -51,7 +55,7 @@ service cloud.firestore {
              data.title is string && data.title.size() <= 256 &&
              data.artist is string && data.artist.size() <= 128 &&
              data.status in ['pending', 'approved', 'in_progress', 'live', 'action_required', 'rejected', 'takedown_requested', 'completed'] &&
-             data.createdAt is string &&
+             isDate(data.createdAt) &&
              data.keys().hasAll(['userId', 'title', 'artist', 'status', 'createdAt']);
     }
 
@@ -60,16 +64,15 @@ service cloud.firestore {
              data.amount is number && data.amount >= 500 &&
              data.method in ['UPI', 'Bank'] &&
              data.status in ['pending', 'completed', 'rejected'] &&
-             data.createdAt is string &&
+             isDate(data.createdAt) &&
              data.keys().hasAll(['userId', 'amount', 'method', 'status', 'createdAt']);
     }
 
     function isValidNotification(data) {
       return data.title is string && data.title.size() <= 128 &&
              data.message is string && data.message.size() <= 512 &&
-             data.type in ['info', 'warning', 'urgent'] &&
-             data.createdAt is string &&
-             data.keys().hasAll(['title', 'message', 'type', 'createdAt']);
+             isDate(data.createdAt) &&
+             data.keys().hasAll(['title', 'message', 'createdAt']);
     }
 
     function isValidSupportTicket(data) {
@@ -77,7 +80,7 @@ service cloud.firestore {
              data.subject is string && data.subject.size() <= 256 &&
              data.message is string && data.message.size() <= 2048 &&
              data.status in ['pending', 'resolved'] &&
-             data.createdAt is string &&
+             isDate(data.createdAt) &&
              data.keys().hasAll(['userId', 'subject', 'message', 'status', 'createdAt']);
     }
 
@@ -87,7 +90,7 @@ service cloud.firestore {
              data.type is string &&
              data.priority in ['normal', 'high', 'urgent'] &&
              data.status in ['pending', 'in_review', 'approved', 'rejected', 'completed'] &&
-             data.createdAt is string &&
+             isDate(data.createdAt) &&
              data.keys().hasAll(['ticketId', 'userId', 'type', 'status', 'priority', 'createdAt']);
     }
 
@@ -101,7 +104,8 @@ service cloud.firestore {
 
     // User Notifications
     match /user_notifications/{notificationId} {
-      allow get, list: if isOwner(resource.data.userId) || isAdmin();
+      allow get: if isOwner(resource.data.userId) || isAdmin();
+      allow list: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
       allow create: if isAdmin();
       allow update: if isOwner(resource.data.userId) && 
         incoming().diff(existing()).affectedKeys().hasOnly(['read']);
@@ -120,7 +124,7 @@ service cloud.firestore {
     match /user_requests/{requestId} {
       allow get: if isOwner(resource.data.userId) || isAdmin();
       allow list: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
-      allow create: if isVerifiedUser() && isOwner(incoming().userId) && isValidUserRequest(incoming()) && incoming().status == 'pending';
+      allow create: if isSignedIn() && isOwner(incoming().userId) && isValidUserRequest(incoming()) && incoming().status == 'pending';
       allow update: if (isAdmin() || (
         isOwner(existing().userId) && 
         incoming().userId == existing().userId &&
@@ -135,9 +139,9 @@ service cloud.firestore {
       allow create: if isAdmin();
     }
 
-    // System Config
-    match /system/config {
-      allow read: if isSignedIn();
+    // System Config & Status
+    match /system/{id} {
+      allow read: if isSignedIn() || (id == 'status');
       allow write: if isAdmin();
     }
 

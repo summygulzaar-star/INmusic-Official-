@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import { cn } from "../lib/utils";
 import { LoadingSpinner } from "../components/ui/Loading";
+import { useAuth } from "../context/AuthContext";
 
 const PLATFORMS = [
   { name: "Spotify", gradient: "from-[#1DB954] to-[#1ed760]" },
@@ -36,6 +37,7 @@ const PLATFORMS = [
 ];
 
 export default function Home() {
+  const { user } = useAuth();
   const { scrollYProgress } = useScroll();
   const yTranslate = useTransform(scrollYProgress, [0, 1], [0, -100]);
   
@@ -64,7 +66,7 @@ export default function Home() {
 
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 px-6 py-4 flex items-center justify-between glass-dark mt-4 mx-auto max-w-7xl left-0 right-0 rounded-full border-white/5">
-        <Link to="/" className="flex items-center gap-2">
+        <Link to={user ? "/dashboard" : "/"} className="flex items-center gap-2">
           <div className="w-10 h-10 bg-brand-blue rounded-xl flex items-center justify-center rotate-12 shadow-lg">
             <Music className="text-white w-6 h-6 -rotate-12" />
           </div>
@@ -75,12 +77,22 @@ export default function Home() {
           <a href="#features" className="hover:text-electric-blue transition-colors">Features</a>
           <a href="#pricing" className="hover:text-electric-blue transition-colors">Pricing</a>
           <a href="#contact" className="hover:text-electric-blue transition-colors">Contact</a>
-          <a href="#" className="hover:text-electric-blue transition-colors">Support</a>
+          <Link to="/dashboard/requests" className="hover:text-electric-blue transition-colors uppercase">Support</Link>
         </div>
 
         <div className="flex items-center gap-4">
-          <Link to="/auth?mode=login" className="text-sm font-medium hover:text-electric-blue transition-colors">Login</Link>
-          <Link to="/auth?mode=signup" className="px-6 py-2.5 bg-electric-blue text-[#0D1B2A] rounded-full font-bold text-xs uppercase tracking-widest hover:shadow-[0_0_20px_rgba(0,212,255,0.4)] transition-all">Start Now</Link>
+          <Link 
+            to={user ? "/dashboard" : "/auth?mode=login"} 
+            className="text-sm font-medium hover:text-electric-blue transition-colors"
+          >
+            {user ? "Dashboard" : "Login"}
+          </Link>
+          <Link 
+            to={user ? "/dashboard/upload" : "/auth?mode=signup"} 
+            className="px-6 py-2.5 bg-electric-blue text-[#0D1B2A] rounded-full font-bold text-xs uppercase tracking-widest hover:shadow-[0_0_20px_rgba(0,212,255,0.4)] transition-all"
+          >
+            {user ? "Primary Release" : "Start Now"}
+          </Link>
         </div>
       </nav>
 
@@ -118,10 +130,10 @@ export default function Home() {
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
               <Link 
-                to="/auth?mode=signup" 
+                to={user ? "/dashboard" : "/auth?mode=signup"} 
                 className="w-full sm:w-auto px-12 py-6 bg-electric-blue text-[#0D1B2A] rounded-3xl font-black text-xs uppercase tracking-[0.3em] hover:scale-[1.05] transition-all shadow-[0_20px_50px_rgba(0,212,255,0.2)] active:scale-95"
               >
-                Access Platform
+                {user ? "Enter Dashboard" : "Access Platform"}
               </Link>
               <a 
                 href="#features" 
