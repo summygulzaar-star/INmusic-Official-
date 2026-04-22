@@ -5,9 +5,9 @@ import * as z from "zod";
 import { motion, AnimatePresence } from "motion/react";
 import { db, storage } from "../../lib/firebase";
 import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
-import { collection, addDoc, getDocs, query, where } from "firebase/firestore";
+import { collection, addDoc, getDocs, query, where, doc, getDoc, updateDoc } from "firebase/firestore";
 import { useAuth } from "../../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { uploadToCloudinary } from "../../lib/cloudinary";
 import { 
   Music, 
@@ -99,14 +99,18 @@ const PLATFORMS = [
 export default function Upload() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { releaseId } = useParams();
   const [step, setStep] = useState(0);
   const [isUploading, setIsUploading] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0, fileName: "" });
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>(PLATFORMS.map(p => p.name));
+  const [existingRelease, setExistingRelease] = useState<any>(null);
   
   const [audioFile, setAudioFile] = useState<File | null>(null);
   const [coverFile, setCoverFile] = useState<File | null>(null);
+  const [existingAudioUrl, setExistingAudioUrl] = useState<string | null>(null);
+  const [existingCoverUrl, setExistingCoverUrl] = useState<string | null>(null);
 
   // New states for selection
   const [userArtists, setUserArtists] = useState<any[]>([]);
@@ -123,6 +127,24 @@ export default function Upload() {
     
     const labelsSnap = await getDocs(query(collection(db, "labels"), where("userId", "==", user.uid)));
     setUserLabels(labelsSnap.docs.map(d => ({ id: d.id, ...d.data() })));
+
+    if (releaseId) {
+      const releaseDoc = await getDoc(doc(db, "releases", releaseId));
+      if (releaseDoc.exists()) {
+        const data = releaseDoc.data();
+        setExistingRelease(data);
+        setExistingAudioUrl(data.audioUrl || null);
+        setExistingCoverUrl(data.coverUrl || null);
+        setSelectedPlatforms(data.platforms || PLATFORMS.map(p => p.name));
+        
+        // Map data back to form
+        if (data.metadata) {
+          Object.entries(data.metadata).forEach(([k, v]) => {
+            setValue(k as any, v as any);
+          });
+        }
+      }
+    }
   };
 
   useEffect(() => {
@@ -224,12 +246,12 @@ export default function Upload() {
 
   const onSubmit = async (data: any) => {
     setFormError(null);
-    if (!audioFile) {
+    if (!audioFile && !existingAudioUrl) {
       setFormError("Please upload an audio file first.");
       setStep(4);
       return;
     }
-    if (!coverFile) {
+    if (!coverFile && !existingCoverUrl) {
       setFormError("Please upload cover art first.");
       setStep(5);
       return;
@@ -238,37 +260,52 @@ export default function Upload() {
     
     setIsUploading(true);
     try {
-      // 1. Upload Cover to Cloudinary
-      const coverUrl = await uploadToCloudinary(coverFile, (progress) => {
-        setUploadProgress({ current: progress, total: 100, fileName: "Cover Art" });
-      });
+      // 1. Upload Cover to Cloudinary if new file
+      let coverUrl = existingCoverUrl;
+      if (coverFile) {
+        coverUrl = await uploadToCloudinary(coverFile, (progress) => {
+          setUploadProgress({ current: progress, total: 100, fileName: "Cover Art" });
+        });
+      }
 
-      // 2. Upload Audio to Cloudinary
-      const audioUrl = await uploadToCloudinary(audioFile, (progress) => {
-        setUploadProgress({ current: progress, total: 100, fileName: "Master Audio" });
-      });
+      // 2. Upload Audio to Cloudinary if new file
+      let audioUrl = existingAudioUrl;
+      if (audioFile) {
+        audioUrl = await uploadToCloudinary(audioFile, (progress) => {
+          setUploadProgress({ current: progress, total: 100, fileName: "Master Audio" });
+        });
+      }
 
-      // 3. Save to Firestore
-      await addDoc(collection(db, "releases"), {
+      const releaseData = {
         userId: user.uid,
         title: data.songName,
         artist: data.singerName,
-        genre: data.primaryGenre, // Match blueprint
+        genre: data.primaryGenre, 
         secondaryGenre: data.secondaryGenre,
         language: data.language,
         copyright: `${data.copyrightYear} ${data.copyrightHolder}`,
         publisher: `${data.publisherYear} ${data.publisherHolder}`,
-        label: data.labelName, // Match blueprint
+        label: data.labelName, 
         releaseDate: data.releaseDate,
         releaseTime: data.releaseTime,
         audioUrl,
         coverUrl,
-        status: "pending",
+        status: "pending", // Reset to pending after edit
         platforms: selectedPlatforms,
-        // Keep original data for reference
         metadata: data,
-        createdAt: new Date().toISOString()
-      });
+        isrc: data.isrc || existingRelease?.isrc || null,
+        upc: data.upc || existingRelease?.upc || null,
+        updatedAt: new Date().toISOString()
+      };
+
+      if (releaseId) {
+        await updateDoc(doc(db, "releases", releaseId), releaseData);
+      } else {
+        await addDoc(collection(db, "releases"), {
+          ...releaseData,
+          createdAt: new Date().toISOString()
+        });
+      }
 
       setStep(8); // Finished
     } catch (err: any) {
@@ -310,11 +347,11 @@ export default function Upload() {
       alert("Please select a label.");
       return;
     }
-    if (step === 4 && !audioFile) {
+    if (step === 4 && !audioFile && !existingAudioUrl) {
       alert("Please upload your master audio file.");
       return;
     }
-    if (step === 5 && !coverFile) {
+    if (step === 5 && !coverFile && !existingCoverUrl) {
       alert("Please upload your artwork.");
       return;
     }
@@ -648,27 +685,27 @@ export default function Upload() {
                          <input type="file" accept=".mp3,.wav" onChange={e => setAudioFile(e.target.files?.[0] || null)} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
                          <div className={cn(
                            "w-full aspect-[21/9] rounded-[4rem] border-2 border-dashed flex flex-col items-center justify-center gap-6 transition-all",
-                           audioFile ? "border-emerald-500 bg-emerald-50 shadow-2xl shadow-emerald-500/10" : "border-slate-200 bg-slate-50 hover:border-brand-blue hover:bg-slate-100 shadow-sm"
+                           (audioFile || existingAudioUrl) ? "border-emerald-500 bg-emerald-50 shadow-2xl shadow-emerald-500/10" : "border-slate-200 bg-slate-50 hover:border-brand-blue hover:bg-slate-100 shadow-sm"
                          )}>
-                            {audioFile ? <CheckCircle className="w-16 h-16 text-emerald-500 animate-bounce" /> : <div className="w-16 h-16 bg-white rounded-3xl shadow-xl flex items-center justify-center text-brand-blue"><FileMusic className="w-8 h-8" /></div>}
+                            {(audioFile || existingAudioUrl) ? <CheckCircle className="w-16 h-16 text-emerald-500 animate-bounce" /> : <div className="w-16 h-16 bg-white rounded-3xl shadow-xl flex items-center justify-center text-brand-blue"><Music className="w-8 h-8" /></div>}
                             <div className="text-center px-8">
-                               <p className="text-lg font-black font-display uppercase tracking-tight">{audioFile ? audioFile.name : "Drag & Drop Studio WAV"}</p>
+                               <p className="text-lg font-black font-display uppercase tracking-tight">{audioFile ? audioFile.name : (existingAudioUrl ? "Master File Already Loaded" : "Drag & Drop Studio WAV")}</p>
                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2">Compatible formats: WAV • MP3 (320kbps)</p>
                             </div>
                          </div>
                       </div>
-                      {audioFile && (
+                      {(audioFile || existingAudioUrl) && (
                         <div className="mt-8 p-6 bg-slate-900 rounded-3xl flex items-center justify-between shadow-2xl">
                            <div className="flex items-center gap-4">
-                              <button type="button" className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center text-white"><Youtube className="w-5 h-5 fill-white" /></button>
-                              <span className="text-xs font-bold text-white uppercase tracking-widest">Audio Loaded Successfully</span>
+                              <div className="w-10 h-10 bg-white/20 rounded-xl flex items-center justify-center text-white"><Music className="w-5 h-5" /></div>
+                              <span className="text-xs font-bold text-white uppercase tracking-widest">{audioFile ? "Audio Loaded Successfully" : "Using Existing Master"}</span>
                            </div>
-                           <button type="button" onClick={() => setAudioFile(null)} className="text-white/40 hover:text-white transition-colors"><X className="w-5 h-5" /></button>
+                           {(audioFile || existingAudioUrl) && <button type="button" onClick={() => { setAudioFile(null); setExistingAudioUrl(null); }} className="text-white/40 hover:text-white transition-colors"><X className="w-5 h-5" /></button>}
                         </div>
                       )}
                       <div className="pt-12 flex justify-center gap-6">
                         <button type="button" onClick={prevStep} className="btn-premium glass text-slate-500">Back</button>
-                        <button type="button" disabled={!audioFile} onClick={nextStep} className="btn-premium btn-glow py-5 px-12 disabled:opacity-50">Upload & Continue</button>
+                        <button type="button" disabled={!audioFile && !existingAudioUrl} onClick={nextStep} className="btn-premium btn-glow py-5 px-12 disabled:opacity-50">Continue</button>
                       </div>
                    </div>
                 </motion.div>

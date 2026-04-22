@@ -4,6 +4,9 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { v2 as cloudinary } from "cloudinary";
 import dotenv from "dotenv";
+import * as userCtrl from "./controllers/userController";
+import * as songCtrl from "./controllers/songController";
+import "./events/emailEvents"; // Initialize listeners
 
 dotenv.config();
 
@@ -44,6 +47,13 @@ async function startServer() {
     const isrc = "IN-D" + Math.random().toString(36).substring(2, 10).toUpperCase();
     res.json({ isrc });
   });
+
+  // --- AUTOMATED NOTIFICATION ENDPOINTS ---
+  app.post("/api/auth/signup", userCtrl.signup);
+  app.post("/api/auth/verify", userCtrl.verifyEmail);
+  app.post("/api/releases/upload-notify", songCtrl.uploadSong);
+  app.post("/api/admin/releases/update-status-notify", songCtrl.updateStatus);
+  app.post("/api/billing/process-payment", songCtrl.processPayment);
 
   // Cloudinary Signing Endpoint
   app.post("/api/cloudinary-sign", (req, res) => {

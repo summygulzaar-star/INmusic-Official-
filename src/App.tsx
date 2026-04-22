@@ -15,6 +15,7 @@ const DashboardLayout = lazy(() => import('./components/DashboardLayout'));
 // Dashboard Pages
 const Overview = lazy(() => import('./pages/dashboard/Overview'));
 const MyReleases = lazy(() => import('./pages/dashboard/MyReleases'));
+const ReleaseDetails = lazy(() => import('./pages/dashboard/ReleaseDetails'));
 const Upload = lazy(() => import('./pages/dashboard/Upload'));
 const Artists = lazy(() => import('./pages/dashboard/Artists'));
 const Labels = lazy(() => import('./pages/dashboard/Labels'));
@@ -107,7 +108,9 @@ function AppContent() {
           <Route path="/dashboard" element={<PrivateRoute><DashboardLayout /></PrivateRoute>}>
             <Route index element={<Overview />} />
             <Route path="releases" element={<MyReleases />} />
+            <Route path="releases/:releaseId" element={<ReleaseDetails />} />
             <Route path="upload" element={<Upload />} />
+            <Route path="edit/:releaseId" element={<Upload />} />
             <Route path="artists" element={<Artists />} />
             <Route path="labels" element={<Labels />} />
             <Route path="wallet" element={<Wallet />} />

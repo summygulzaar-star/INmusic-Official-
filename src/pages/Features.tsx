@@ -17,7 +17,9 @@ import {
   Layout,
   MessageCircle,
   Clock,
-  ExternalLink
+  ExternalLink,
+  Instagram,
+  ChevronRight
 } from "lucide-react";
 import { cn } from "../lib/utils";
 
@@ -424,47 +426,115 @@ export default function Features() {
          </div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="py-20 px-6 border-t border-white/5 bg-[#081320]">
-        <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-12 mb-20">
-          <div className="col-span-2 space-y-8">
-            <div className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-brand-blue rounded-xl flex items-center justify-center rotate-12 shadow-lg">
-                <Music className="text-white w-6 h-6 -rotate-12" />
+      {/* Footer */}
+      <footer className="relative py-32 px-6 bg-[#030712] border-t border-white/5 overflow-hidden">
+        {/* Abstract Background Glow */}
+        <div className="absolute top-0 left-1/4 w-[40rem] h-[40rem] bg-indigo-500/5 blur-[150px] rounded-full pointer-events-none"></div>
+        
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 md:gap-24 pb-24 border-b border-white/5">
+            <div className="col-span-1 lg:col-span-2 space-y-10 lg:pr-24">
+              <Link to="/" className="flex items-center gap-3 group">
+                <div className="w-14 h-14 bg-indigo-600 rounded-[1.2rem] flex items-center justify-center rotate-3 group-hover:rotate-12 transition-all duration-500 shadow-[0_0_40px_rgba(79,70,229,0.4)]">
+                  <Music className="text-white w-7 h-7 -rotate-3 group-hover:-rotate-12 transition-all duration-500" />
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-display text-3xl font-black tracking-tighter text-white uppercase italic leading-none">IND Distribution</span>
+                  <span className="text-[10px] font-black tracking-[0.4em] text-indigo-500 uppercase mt-1 italic">Protocol v2.6 // 2026</span>
+                </div>
+              </Link>
+              <p className="text-slate-400 max-w-sm text-lg font-medium leading-relaxed italic opacity-80 decoration-slate-800">
+                The ultimate ecosystem for independent music creators and labels. Empowering 50k+ independent artists across Asia with secure global distribution.
+              </p>
+              <div className="flex gap-5">
+                {[
+                  { icon: Instagram, color: "hover:bg-pink-500/20 hover:text-pink-500" },
+                  { icon: Youtube, color: "hover:bg-red-600/20 hover:text-red-600" },
+                  { icon: MessageCircle, color: "hover:bg-[#25D366]/20 hover:text-[#25D366]" },
+                  { icon: Mail, color: "hover:bg-white/10 hover:text-white" }
+                ].map((social, idx) => (
+                  <motion.div 
+                    key={idx}
+                    whileHover={{ y: -8, scale: 1.1, rotate: 5 }}
+                    className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 transition-all cursor-pointer backdrop-blur-md hover:border-white/20"
+                  >
+                    <social.icon className={cn("w-6 h-6 transition-colors", social.color.split(' ')[1].replace('hover:', ''))} />
+                  </motion.div>
+                ))}
               </div>
-              <span className="font-display text-2xl font-bold tracking-tighter">IND Distribution</span>
             </div>
-            <p className="text-white/40 max-w-sm font-light leading-relaxed">The ultimate ecosystem for independent music creators and labels. Direct to 250+ stores.</p>
-            <div className="flex gap-4">
-               {[Mail, Youtube, Layout].map((Icon, i) => (
-                 <div key={i} className="w-12 h-12 rounded-full glass-dark flex items-center justify-center border-white/10 hover:bg-electric-blue hover:text-[#0D1B2A] transition-all cursor-pointer">
-                    <Icon className="w-5 h-5" />
-                 </div>
-               ))}
+
+            <div className="space-y-10 lg:pl-10 lg:border-l lg:border-white/5">
+              <h4 className="font-display font-black uppercase tracking-[0.4em] text-[10px] text-indigo-500 italic flex items-center gap-2">
+                <span className="w-1 h-1 bg-indigo-500 rounded-full"></span>
+                Navigation
+              </h4>
+              <ul className="space-y-6">
+                {[
+                  { label: "Features", to: "/features" },
+                  { label: "Pricing", to: "/#pricing" },
+                  { label: "Join Network", to: "/auth?mode=signup" },
+                  { label: "Support Terminal", to: "/contact" }
+                ].map((link, idx) => (
+                  <li key={idx}>
+                    <Link to={link.to} className="group flex items-center gap-3">
+                      <ChevronRight className="w-3 h-3 text-white/0 group-hover:text-indigo-500 group-hover:translate-x-0 -translate-x-2 transition-all" />
+                      <span className="text-sm font-bold text-slate-400 group-hover:text-white transition-all uppercase tracking-widest">
+                        {link.label}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="space-y-10 lg:pl-10 lg:border-l lg:border-white/5">
+              <h4 className="font-display font-black uppercase tracking-[0.4em] text-[10px] text-pink-500 italic flex items-center gap-2">
+                <span className="w-1 h-1 bg-pink-500 rounded-full"></span>
+                Company
+              </h4>
+              <ul className="space-y-6">
+                {[
+                  { label: "Artist Login", to: "/auth?mode=login" },
+                  { label: "Contact Us", to: "/contact" },
+                  { label: "Terms & Legal", to: "/terms" },
+                  { label: "Refund Policy", to: "/refunds" }
+                ].map((link, idx) => (
+                  <li key={idx}>
+                    <Link to={link.to} className="group flex items-center gap-3">
+                      <ChevronRight className="w-3 h-3 text-white/0 group-hover:text-pink-500 group-hover:translate-x-0 -translate-x-2 transition-all" />
+                      <span className="text-sm font-bold text-slate-400 group-hover:text-white transition-all uppercase tracking-widest">
+                        {link.label}
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
-          <div>
-            <h4 className="font-display font-black uppercase tracking-widest text-[10px] text-white/40 mb-8 italic">Navigation</h4>
-            <ul className="space-y-4 text-xs font-bold text-white/60 uppercase tracking-widest">
-               <li><Link to="/features" className="hover:text-electric-blue">Features</Link></li>
-               <li><a href="/#pricing" className="hover:text-electric-blue">Pricing</a></li>
-               <li><Link to="/auth?mode=signup" className="hover:text-electric-blue">Join Network</Link></li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-display font-black uppercase tracking-widest text-[10px] text-white/40 mb-8 italic">Company</h4>
-            <ul className="space-y-4 text-xs font-bold text-white/60 uppercase tracking-widest">
-               <li><Link to="/auth?mode=login" className="hover:text-electric-blue transition-colors">Artist Login</Link></li>
-               <li><Link to="/contact" className="hover:text-electric-blue transition-colors">Contact Us</Link></li>
-               <li><Link to="/terms" className="hover:text-electric-blue transition-colors">Terms & Legal</Link></li>
-               <li><Link to="/refunds" className="hover:text-electric-blue transition-colors">Refund Policy</Link></li>
-            </ul>
-          </div>
-        </div>
-        <div className="max-w-7xl mx-auto pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] font-black uppercase tracking-[0.3em] text-white/20">
-          <p>© {new Date().getFullYear()} IND Distribution. POWERED BY AI STUDIO.</p>
-          <div className="flex gap-8">
-            <span className="flex items-center gap-2"><Globe className="w-3 h-3" /> Asia / India / Global</span>
+
+          {/* Bottom Bar - Redesigned as Technical Metadata Rail */}
+          <div className="relative pt-12">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-8 text-[10px] font-mono tracking-widest uppercase text-slate-500">
+              <div className="flex items-center gap-6">
+                <div className="flex items-center gap-2 bg-indigo-500/5 px-3 py-1.5 rounded-lg border border-indigo-500/10">
+                  <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse"></span>
+                  <span className="text-indigo-500 font-bold">SYSTEM_READY</span>
+                </div>
+                <p>© 2026 IND Distribution // STATUS: <span className="text-white">ASIA_OPERATIONAL</span></p>
+              </div>
+              <div className="flex items-center gap-8 md:gap-12 backdrop-blur-sm bg-white/5 px-6 py-3 rounded-2xl border border-white/10">
+                <div className="flex items-center gap-3 group">
+                  <Globe className="w-3.5 h-3.5 text-indigo-500" />
+                  <span className="opacity-60">ASIA / INDIA / GLOBAL</span>
+                </div>
+                <div className="w-[1px] h-4 bg-white/10"></div>
+                <div className="hidden lg:flex items-center gap-3 group">
+                  <ShieldCheck className="w-3.5 h-3.5 text-pink-500" />
+                  <span className="opacity-60">SECURED_BY_AI_STUDIO</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </footer>

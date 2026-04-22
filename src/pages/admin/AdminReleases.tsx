@@ -29,8 +29,8 @@ export default function AdminReleases() {
            <h1 className="text-3xl md:text-5xl font-black font-display tracking-tight uppercase">Global Release Catalog</h1>
            <p className="text-xs md:text-sm text-slate-400 font-medium">Comprehensive oversight of all submissions across the global distribution network.</p>
         </div>
-        <div className="flex gap-2 md:gap-4 overflow-x-auto pb-2 scrollbar-hide py-1">
-           {["all", "pending", "approved", "rejected", "live"].map(f => (
+        <div className="flex gap-2 md:gap-4 overflow-x-auto pb-2 scrollbar-hide py-1 max-w-full">
+           {["all", "pending", "action_required", "approved", "in_progress", "live", "takedown_requested", "completed", "rejected"].map(f => (
              <button 
                key={f}
                onClick={() => setFilter(f)}
@@ -39,7 +39,7 @@ export default function AdminReleases() {
                  filter === f ? "bg-brand-purple text-white shadow-xl shadow-purple-900/40" : "bg-slate-800 text-slate-500 hover:text-white"
                )}
              >
-               {f.toUpperCase()}
+               {f.replace(/_/g, " ").toUpperCase()}
              </button>
            ))}
         </div>

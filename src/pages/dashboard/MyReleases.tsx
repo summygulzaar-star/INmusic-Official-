@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { collection, query, where, getDocs, orderBy } from "firebase/firestore";
+import { collection, query, where, getDocs, orderBy, doc, updateDoc } from "firebase/firestore";
 import { db } from "../../lib/firebase";
 import { useAuth } from "../../context/AuthContext";
 import { 
@@ -18,6 +18,8 @@ import {
   FileText,
   ArrowRight,
   Download,
+  RotateCcw,
+  Zap,
   Image as ImageIcon
 } from "lucide-react";
 import { cn } from "../../lib/utils";
@@ -28,13 +30,13 @@ import { toast } from "sonner";
 const STATUSES = [
   { id: 'all', label: 'All Releases' },
   { id: 'pending', label: 'Pending', color: 'bg-amber-500/10 text-amber-600 border border-amber-500/20' },
-  { id: 'approved', label: 'Approved', color: 'bg-brand-blue/10 text-brand-blue border border-brand-blue/20' },
-  { id: 'in_progress', label: 'In Progress', color: 'bg-indigo-500/10 text-indigo-600 border border-indigo-500/20' },
+  { id: 'action_required', label: 'Correction', color: 'bg-rose-500/10 text-rose-600 border border-rose-500/20' },
+  { id: 'approved', label: 'Approved', color: 'bg-indigo-500/10 text-indigo-600 border border-indigo-500/20' },
+  { id: 'in_progress', label: 'In Progress', color: 'bg-blue-500/10 text-blue-600 border border-blue-500/20' },
   { id: 'live', label: 'Live', color: 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/20' },
-  { id: 'action_required', label: 'Action Required', color: 'bg-rose-500/10 text-rose-600 border border-rose-500/20' },
-  { id: 'rejected', label: 'Rejected', color: 'bg-rose-500/10 text-rose-600 border border-rose-500/20' },
-  { id: 'takedown', label: 'Takedown Requested', color: 'bg-slate-500/10 text-slate-600 border border-slate-500/20' },
+  { id: 'takedown_requested', label: 'Takedown Requested', color: 'bg-slate-500/10 text-slate-600 border border-slate-500/20' },
   { id: 'completed', label: 'Completed', color: 'bg-slate-900 text-white' },
+  { id: 'rejected', label: 'Rejected', color: 'bg-rose-500/10 text-rose-600 border border-rose-500/20' },
 ];
 
 const PLATFORMS = [
@@ -188,12 +190,35 @@ export default function MyReleases() {
                           to={`/dashboard/releases/${release.id}`}
                           className="w-full py-4 bg-white rounded-2xl text-slate-950 font-black text-[10px] uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-brand-blue hover:text-white transition-all transform translate-y-4 group-hover:translate-y-0"
                         >
-                           Track Assets <ChevronRight className="w-4 h-4" />
+                           Detailed Dossier <ChevronRight className="w-4 h-4" />
                         </Link>
                         <div className="flex gap-3 transform translate-y-8 group-hover:translate-y-0 transition-transform delay-75 invisible group-hover:visible">
-                           {/* Keep these existing buttons or replace them with a single 'Manage' one */}
-                           <button className="flex-1 py-3 bg-white/10 backdrop-blur-md text-white border border-white/20 rounded-xl text-[9px] font-bold uppercase tracking-widest hover:bg-white/20 transition-all">Edit</button>
-                           <button className="flex-1 py-3 bg-rose-500/80 backdrop-blur-md text-white rounded-xl text-[9px] font-bold uppercase tracking-widest hover:bg-rose-600 transition-all">Takedown</button>
+                           {(release.status === 'action_required' || release.status === 'rejected') && (
+                             <Link 
+                               to={`/dashboard/edit/${release.id}`}
+                               className="flex-1 py-3 bg-white/10 backdrop-blur-md text-white border border-white/20 rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-white/20 transition-all text-center flex items-center justify-center gap-2"
+                             >
+                               <RotateCcw className="w-3 h-3" /> Fix Assets
+                             </Link>
+                           )}
+                           {release.status === 'live' && (
+                             <button 
+                               onClick={async () => {
+                                 if (window.confirm("Are you sure you want to request a takedown for this release?")) {
+                                   try {
+                                     await updateDoc(doc(db, "releases", release.id), { status: "takedown_requested" });
+                                     setReleases(prev => prev.map(r => r.id === release.id ? { ...r, status: "takedown_requested" } : r));
+                                     toast.success("Takedown protocol initiated.");
+                                   } catch (err) {
+                                     toast.error("Failed to initiate takedown.");
+                                   }
+                                 }
+                               }}
+                               className="flex-1 py-3 bg-rose-500/80 backdrop-blur-md text-white rounded-xl text-[9px] font-bold uppercase tracking-widest hover:bg-rose-600 transition-all"
+                             >
+                               Takedown
+                             </button>
+                           )}
                         </div>
                      </div>
                   </div>
@@ -221,6 +246,17 @@ export default function MyReleases() {
                            <p className="text-[9px] font-medium text-slate-400 italic">Composer: {release.composer}</p>
                            <p className="text-[9px] font-medium text-slate-400 italic">Producer: {release.producer}</p>
                         </div>
+
+                        {(release.status === 'rejected' || release.status === 'action_required') && release.adminNotes && (
+                           <div className="p-4 bg-rose-50 border border-rose-100 rounded-2xl md:rounded-[2rem] space-y-2">
+                              <p className="text-[8px] font-black text-rose-600 uppercase tracking-widest flex items-center gap-1.5">
+                                <AlertCircle className="w-3 h-3" /> System Feedback
+                              </p>
+                              <p className="text-[10px] text-rose-700 font-medium italic line-clamp-2">
+                                "{release.adminNotes}"
+                              </p>
+                           </div>
+                        )}
                      </div>
 
                      <div className="grid grid-cols-2 gap-4 pt-6 border-t border-slate-50">
@@ -263,9 +299,11 @@ export default function MyReleases() {
                      )}
 
                      <div className="flex items-center justify-between pt-4">
-                        <div className="flex items-center gap-1.5">
-                           <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
-                           <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Global Status Sync</span>
+                        <div className="flex items-center gap-1.5 underline decoration-brand-blue/20 underline-offset-4 decoration-dotted">
+                          <Link to={`/dashboard/releases/${release.id}`} className="flex items-center gap-1.5 group/link">
+                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></div>
+                            <span className="text-[10px] font-black text-slate-400 group-hover/link:text-brand-blue uppercase tracking-widest transition-colors">Global Status Sync</span>
+                          </Link>
                         </div>
                         <div className="flex gap-2">
                            <div className="w-8 h-8 rounded-lg bg-slate-50 flex items-center justify-center text-slate-300">

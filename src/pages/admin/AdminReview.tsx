@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../lib/firebase";
+import { toast } from "sonner";
 import { 
   Check, 
   X, 
@@ -45,6 +46,7 @@ export default function AdminReview() {
   const [links, setLinks] = useState<any>({});
   const [aiChecking, setAiChecking] = useState(false);
   const [aiResult, setAiResult] = useState<MetadataCheckResult | null>(null);
+  const [updateType, setUpdateType] = useState<"rejected" | "action_required" | "live" | "in_progress" | "approved" | "completed">("rejected");
 
   const platforms = [
     { id: 'spotify', name: 'Spotify' },
@@ -100,21 +102,27 @@ export default function AdminReview() {
     if (!releaseId) return;
     setSaving(true);
     try {
+      // Use original release data as base to avoid losing root fields like ISRC/UPC if they aren't in formData
+      const currentRelease = (await getDoc(doc(db, "releases", releaseId))).data();
+      
       const { id, ...saveData } = formData;
       await updateDoc(doc(db, "releases", releaseId), {
+        ...currentRelease,
         ...saveData,
         status: newStatus,
-        isrc: isrc || null,
-        upc: upc || null,
-        platformLinks: links,
+        isrc: isrc || currentRelease?.isrc || null,
+        upc: upc || currentRelease?.upc || null,
+        platformLinks: links || currentRelease?.platformLinks || {},
         adminNotes: rejectionReason,
         reviewedAt: new Date().toISOString()
       });
-      navigate("/admin");
+      toast.success(`Protocol updated: ${newStatus.toUpperCase()}`);
+      navigate("/admin/releases");
     } catch (err) {
-      alert("Update failed.");
+      toast.error("Critical: Master Sync Failure");
     } finally {
       setSaving(false);
+      setShowRejectionModal(false);
     }
   };
 
@@ -170,22 +178,90 @@ export default function AdminReview() {
             </button>
             <h1 className="text-2xl md:text-4xl font-black font-display tracking-tight uppercase truncate">REVIEW: <span className="text-brand-blue">{release.title || release.songName}</span></h1>
          </div>
-         <div className="flex gap-3 md:gap-4">
+         <div className="flex flex-wrap gap-3 md:gap-4">
             <button 
               onClick={() => handleUpdate("approved")}
               disabled={saving}
-              className="flex-1 lg:flex-none px-6 md:px-8 py-2.5 md:py-3 bg-emerald-500 text-white rounded-xl md:rounded-2xl font-bold text-xs md:text-base flex items-center justify-center gap-2 shadow-lg shadow-emerald-900/40"
+              className="flex-1 lg:flex-none px-6 md:px-8 py-2.5 md:py-3 bg-indigo-600 text-white rounded-xl md:rounded-2xl font-bold text-xs md:text-sm flex items-center justify-center gap-2 shadow-lg shadow-indigo-900/40 hover:bg-indigo-500 transition-all uppercase tracking-widest"
             >
                <Check className="w-4 h-4 md:w-5 md:h-5" /> APPROVE
             </button>
             <button 
-              onClick={() => setShowRejectionModal(true)}
+              onClick={() => {
+                setUpdateType("rejected");
+                setShowRejectionModal(true);
+              }}
               disabled={saving}
-              className="flex-1 lg:flex-none px-6 md:px-8 py-2.5 md:py-3 bg-rose-500 text-white rounded-xl md:rounded-2xl font-bold text-xs md:text-base flex items-center justify-center gap-2 shadow-lg shadow-rose-900/40"
+              className="flex-1 lg:flex-none px-6 md:px-8 py-2.5 md:py-3 bg-rose-600 text-white rounded-xl md:rounded-2xl font-bold text-xs md:text-sm flex items-center justify-center gap-2 shadow-lg shadow-rose-900/40 hover:bg-rose-500 transition-all uppercase tracking-widest"
             >
                <X className="w-4 h-4 md:w-5 md:h-5" /> REJECT
             </button>
+            <button 
+              onClick={() => {
+                setUpdateType("action_required");
+                setShowRejectionModal(true);
+              }}
+              disabled={saving}
+              className="flex-1 lg:flex-none px-6 md:px-8 py-2.5 md:py-3 bg-amber-600 text-white rounded-xl md:rounded-2xl font-bold text-xs md:text-sm flex items-center justify-center gap-2 shadow-lg shadow-amber-900/40 hover:bg-amber-500 transition-all uppercase tracking-widest"
+            >
+               <RotateCcw className="w-4 h-4 md:w-5 md:h-5" /> CORRECTION
+            </button>
+            {release.status === 'approved' && (
+              <button 
+                onClick={() => handleUpdate("in_progress")}
+                disabled={saving}
+                className="flex-1 lg:flex-none px-6 md:px-8 py-2.5 md:py-3 bg-blue-600 text-white rounded-xl md:rounded-2xl font-bold text-xs md:text-sm flex items-center justify-center gap-2 shadow-lg shadow-blue-900/40 hover:bg-blue-500 transition-all uppercase tracking-widest"
+              >
+                 <Zap className="w-4 h-4 md:w-5 md:h-5" /> START DISTRIBUTION
+              </button>
+            )}
+            {release.status === 'takedown_requested' && (
+              <button 
+                onClick={() => {
+                  if (window.confirm("Confirm completion of takedown?")) {
+                    handleUpdate("completed");
+                  }
+                }}
+                disabled={saving}
+                className="flex-1 lg:flex-none px-6 md:px-8 py-2.5 md:py-3 bg-emerald-600 text-white rounded-xl md:rounded-2xl font-bold text-xs md:text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-900/40 hover:bg-emerald-500 transition-all uppercase tracking-widest"
+              >
+                 <Check className="w-4 h-4 md:w-5 md:h-5" /> COMPLETE TAKEDOWN
+              </button>
+            )}
          </div>
+      </div>
+
+      {/* Status Pipeline Visualizer */}
+      <div className="bg-[#1E293B] p-6 rounded-[2rem] border border-slate-800 flex items-center gap-8 overflow-x-auto scrollbar-hide mb-2">
+        {[
+          { id: 'pending', label: 'Pending' },
+          { id: 'action_required', label: 'Correction' },
+          { id: 'approved', label: 'Approved' },
+          { id: 'in_progress', label: 'In Progress' },
+          { id: 'live', label: 'Live' },
+          { id: 'takedown_requested', label: 'Takedown' },
+          { id: 'completed', label: 'Completed' },
+          { id: 'rejected', label: 'Rejected' },
+        ].map((s, idx) => {
+          const isActive = release.status === s.id;
+          return (
+            <div key={s.id} className="flex items-center gap-4 shrink-0">
+              <div className={cn(
+                "flex flex-col items-center gap-2 transition-all duration-500",
+                isActive ? "opacity-100 scale-110" : "opacity-40"
+              )}>
+                <div className={cn(
+                  "w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-bold border-2",
+                  isActive ? "bg-brand-blue border-brand-blue text-white shadow-[0_0_15px_rgba(0,102,255,0.4)]" : "bg-transparent border-slate-700 text-slate-500"
+                )}>
+                  {idx + 1}
+                </div>
+                <span className="text-[10px] uppercase font-black tracking-widest">{s.label}</span>
+              </div>
+              {idx < 7 && <div className="w-8 h-[2px] bg-slate-800" />}
+            </div>
+          );
+        })}
       </div>
 
       <div className="grid lg:grid-cols-3 gap-10">
@@ -425,30 +501,30 @@ export default function AdminReview() {
                     <AlertCircle className="w-8 h-8" />
                  </div>
                  <div>
-                    <h3 className="text-3xl font-black font-display uppercase tracking-tight">Set Rejection Logic</h3>
-                    <p className="text-slate-500 font-medium">Explain why this asset was terminated.</p>
+                    <h3 className="text-3xl font-black font-display uppercase tracking-tight">{updateType === "rejected" ? "Terminal Rejection" : "Protocol Correction"}</h3>
+                    <p className="text-slate-500 font-medium">{updateType === "rejected" ? "Explain why this asset was terminated." : "Explain the required metadata recalibration."}</p>
                  </div>
               </div>
 
               <div className="space-y-4">
-                 <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">Detailed Reason (Sent to Artist)</label>
+                 <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-500">{updateType === "rejected" ? "Rejection Reason (Sent to Artist)" : "Correction Details (Sent to Artist)"}</label>
                  <textarea 
                    value={rejectionReason}
                    onChange={(e) => setRejectionReason(e.target.value)}
                    rows={6}
                    className="w-full bg-slate-900 border-none rounded-3xl p-8 text-white focus:ring-2 focus:ring-rose-500/30 transition-all font-medium"
-                   placeholder="e.g. Artwork contains watermark, Audio quality too low, Invalid metadata..."
+                   placeholder={updateType === "rejected" ? "e.g. Artwork contains watermark, Audio quality too low..." : "e.g. Please update artist name spelling, Verify songwriter credits..."}
                  />
               </div>
 
               <div className="flex gap-4">
                  <button onClick={() => setShowRejectionModal(false)} className="flex-1 py-4 bg-slate-800 rounded-2xl font-bold uppercase tracking-widest text-xs hover:bg-slate-700 transition-colors">Cancel</button>
                  <button 
-                   onClick={() => handleUpdate("rejected")}
+                   onClick={() => handleUpdate(updateType)}
                    disabled={!rejectionReason || saving}
                    className="flex-1 py-4 bg-rose-500 rounded-2xl font-bold uppercase tracking-widest text-xs shadow-lg shadow-rose-900/40"
                  >
-                   Confirm Rejection
+                   Confirm {updateType === "rejected" ? "Rejection" : "Correction"}
                  </button>
               </div>
            </motion.div>
